@@ -32,7 +32,7 @@ setup(
     scripts=['bin/env-alias'],
 
     install_requires=['pyyaml'],
-    tests_require=['pyyaml', 'pytest'],
-    setup_requires=['pyyaml', 'pytest-runner'],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
 
 )

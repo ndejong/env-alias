@@ -3,14 +3,16 @@ language: python
 
 python:
   - "3.4"
-  # - "3.5"   # collecting ... /home/travis/.travis/functions: line 109:  3561 Segmentation fault (core dumped) pytest
+  #- "3.5"   # collecting ... /home/travis/.travis/functions: line 109:  3561 Segmentation fault (core dumped) pytest
   - "3.6"
   - "3.7"
   - "3.8"
 
 install:
-  - python setup.py clean build
-  - python setup.py install
+  - pip install -r requirements.txt
+  #- pip install -e .
 
 script:
+  - python setup.py clean build
   - python setup.py test
+  - python setup.py install
