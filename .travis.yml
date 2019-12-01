@@ -16,3 +16,5 @@ script:
   - python setup.py clean build
   - python setup.py test
   - python setup.py install
+  - env-alias
+  - env-alias-generator
