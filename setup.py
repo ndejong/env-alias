@@ -31,6 +31,7 @@ setup(
     packages=find_packages(),
     scripts=['bin/env-alias'],
 
+    install_requires=['pyyaml'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
 
