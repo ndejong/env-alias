@@ -1,0 +1,3 @@
+
+class EnvAliasException(Exception):
+    pass
