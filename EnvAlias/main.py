@@ -66,6 +66,8 @@ class EnvAlias:
             content, content_type = EnvAliasContent.local(config['source'])
         elif 'exec' in config.keys():
             content, content_type = EnvAliasContent.exec(config['exec'])
+            if 'selector' in config.keys() and selector is None:
+                selector = 'none'
         else:
             raise EnvAliasException('Configuration of env-alias item "{}" is malformed'.format(config_key))
 
@@ -79,7 +81,7 @@ class EnvAlias:
             return EnvAliasSelector.ini_content(content, selector)
         elif parser == 'json':
             return EnvAliasSelector.json_content(content, selector)
-        elif parser == 'yaml':
+        elif parser in ['yaml', 'yml']:
             return EnvAliasSelector.yaml_content(content, selector)
 
         return EnvAliasSelector.text_content(content, selector)
