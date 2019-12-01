@@ -21,6 +21,8 @@ class EnvAliasContent:
         elif filename.lower()[-4:] in ['.yml', 'yaml']:
             content_type = 'yaml'
 
+        filename = os.path.expanduser(filename)
+
         if not os.path.exists(filename):
             raise EnvAliasException('Unable to locate file required to load', filename)
         with open(filename, 'r') as f:
