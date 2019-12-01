@@ -6,7 +6,7 @@
 
 Helper utility to create shell alias commands that easily set collections of environment variables often with secret
 values from a variety of data-sources and data-formats.
-  
+
 Typically this tool is invoked via an entry in `.bash_aliases` with an entry in the form
 ```bash
 eval $(env-alias my-alias-name ~/path-to/my-alias-name-config-file.yml)
@@ -39,7 +39,7 @@ pip3 install env-alias
 git clone https://github.com/ndejong/env-alias
 cd env-alias
 python3 -m venv venv
-./venv/bin/activate
+source venv/bin/activate
 pip3 install -r requirements.txt
 python3 setup.py clean
 python3 setup.py test
