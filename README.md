@@ -55,14 +55,16 @@ The following examples are presented within the provided [`env-alias-sample.yml`
 #### local_text_01
 Assign the env `local_text_01` to the value of the 1st line of text in `/tmp/textfile.txt`
 ```yaml
-local_text_01:
+env-alias:
+  local_text_01:
     source: '/tmp/textfile.txt'
 ```
 
 #### local_text_02
 Assign the env `local_text_02` to the value of the 2nd line of text in `/tmp/textfile.txt`
 ```yaml
-local_text_02:
+env-alias:
+  local_text_02:
     source: '/tmp/textfile.txt'
     selector: 2
 ```
@@ -70,14 +72,16 @@ local_text_02:
 #### local_text_03
 Assign the env `local_text_03` using the 1st line of text in the text file; text file format used as default file format
 ```yaml
-local_text_03:
+env-alias:
+  local_text_03:
     source: '/tmp/textfile_without_extension'
 ```
 
 #### local_text_04
 Assign the env `local_text_04_override_name` using the 1st line of text in the file and use a different variable name
 ```yaml
-local_text_04:
+env-alias:
+  local_text_04:
     name: 'local_text_04_override_name'
     source: '/tmp/textfile.txt'
 ```
@@ -85,14 +89,16 @@ local_text_04:
 #### local_text_05
 Assign the env `local_text_05` using the 1st line of text in the file specified by env variable `${some_env_with_a_filename}`
 ```yaml
-local_text_05:
+env-alias:
+  local_text_05:
     source: 'env:some_env_with_a_filename'
 ```
 
 #### local_text_06
 Assign the env `local_text_06` using the 1st line of text in the file and force the "text" content parser which is the default parser anyway
 ```yaml
-local_text_06:
+env-alias:
+  local_text_06:
     source: '/tmp/textfile.txt'
     parser: 'text'
 ```
@@ -100,7 +106,8 @@ local_text_06:
 #### local_ini_01
 Assign the env `local_ini_01` from the [foo] section under the [bar] option value; parser determined by filename extension
 ```yaml
-local_ini_01:
+env-alias:
+  local_ini_01:
     source: '/tmp/inifile.ini'
     selector: 'foo.bar'
 ```
@@ -108,7 +115,8 @@ local_ini_01:
 #### local_ini_02
 Assign the env `local_ini_02` from the [foo] section under the [bar] option value; parser manually set since it can not be determined via filename extension
 ```yaml
-local_ini_02:
+env-alias:
+  local_ini_02:
     source: '/tmp/file_without_ini_extension'
     selector: 'foo.bar'
     parser: 'ini'
@@ -117,7 +125,8 @@ local_ini_02:
 #### local_json_01
 Assign the env `local_json_01` from the JSON content using an xpath-style path selector to the desired value
 ```yaml
-local_json_01:
+env-alias:
+  local_json_01:
     source: '/tmp/jsonfile.json'
     selector: 'foo.0.bar'
 ```  
@@ -125,7 +134,8 @@ local_json_01:
 #### local_json_02
 Assign the env `local_json_02` from the JSON content using a jq-style path selector to the desired value
 ```yaml
-local_json_02:
+env-alias:
+  local_json_02:
     source: '/tmp/jsonfile.json'
     selector: '.foo[1]bar'
 ```
@@ -133,7 +143,8 @@ local_json_02:
 #### local_json_03
 Assign the env `local_json_03` from the JSON content using an xpath-style path selector to the desired value; set the JSON parser
 ```yaml
-local_json_03:
+env-alias:
+  local_json_03:
     source: '/tmp/file_without_json_extension'
     selector: 'foo.0.bar'
     parser: 'json'
@@ -142,7 +153,8 @@ local_json_03:
 #### local_yaml_01
 assign the env `local_yaml_01` from the JSON content using an xpath-style path selector to the desired value; js-style is also possible here.
 ```yaml
-local_yaml_01:
+env-alias:
+  local_yaml_01:
     source: '/tmp/yamlfile.yaml'
     selector: 'foo.0.bar'
 ```
@@ -150,7 +162,8 @@ local_yaml_01:
 #### local_yaml_02
 assign the env `local_yaml_02` from the YAML content using an xpath-style path selector to the desired value; set the YAML parser
 ```yaml
-local_yaml_02:
+env-alias:
+  local_yaml_02:
     source: '/tmp/file_without_yaml_extension'
     selector: 'foo.0.bar'
     parser: 'yaml'
@@ -159,14 +172,16 @@ local_yaml_02:
 #### remote_text_01
 Assign the env `remote_text_01` from the 1st line of the remote TEXT content
 ```yaml
-remote_text_01:
+env-alias:
+  remote_text_01:
     source: 'http://textfiles.com/computers/144disk.txt'
 ```
 
 #### remote_json_01
 Assign the env `remote_json_01` from remote JSON content using a jq-style selector
 ```yaml
-remote_json_01:
+env-alias:
+  remote_json_01:
     source: 'https://ip-ranges.amazonaws.com/ip-ranges.json'
     selector: '.prefixes[2].ip_prefix'
 ```
@@ -174,7 +189,8 @@ remote_json_01:
 #### remote_json_02
 Assign the env `remote_json_02` from remote JSON content using an xpath-style selector
 ```yaml
-remote_json_02:
+env-alias:
+  remote_json_02:
     source: 'https://ip-ranges.amazonaws.com/ip-ranges.json'
     selector: 'prefixes.2.ip_prefix'
 ```
@@ -182,14 +198,16 @@ remote_json_02:
 #### exec_01
 Assign the env `exec_01` from the 1st line of the STDOUT of an shell command
 ```yaml
-exec_01:
+env-alias:
+  exec_01:
     exec: 'head /dev/urandom | base64 -w0 | tr -d "/" | tr -d "+" | head -c20'
 ```
 
 #### exec_02
 Assign the env `exec_02` from the 1st line of the STDOUT of an shell command
 ```yaml
-exec_02:
+env-alias:
+  exec_02:
     exec: 'curl -s https://ip-ranges.amazonaws.com/ip-ranges.json'
     parser: 'json'
     selector: '.prefixes[1].ip_prefix'
@@ -198,7 +216,8 @@ exec_02:
 #### exec_03
 Run the shell-command and do not assign it to any env value
 ```yaml
-exec_03:
+env-alias:
+  exec_03:
     exec: 'head /dev/urandom | base64 -w0'
     selector: 'null'
 ```
@@ -206,21 +225,24 @@ exec_03:
 #### direct_01
 Assign env `direct_01` to value "somevalue"
 ```yaml
-direct_01:
+env-alias:
+  direct_01:
     value: 'somevalue'
 ```
 
 #### direct_02
 Use an existing env value as input into this configuration; can be used in any env-alias option
 ```yaml
-direct_02:
+env-alias:
+  direct_02:
     value: 'env:HOME'
 ```
 
 #### direct_03
 Set env set and override the variable name; can be used in any env-alias setting arrangement
 ```yaml
-direct_03:
+env-alias:
+  direct_03:
     name: 'direct_03_override_name'
     value: 'env:HOME'
 ```
