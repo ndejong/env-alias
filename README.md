@@ -107,7 +107,7 @@ env-alias:
 ```
 
 #### local_ini_01
-Assign the env `local_ini_01` from the [foo] section under the [bar] option value; parser determined by filename extension
+Assign the env `local_ini_01` from the `[foo]` section under the `[bar]` option value; parser determined by filename extension
 ```yaml
 env-alias:
   local_ini_01:
@@ -116,7 +116,7 @@ env-alias:
 ```
 
 #### local_ini_02
-Assign the env `local_ini_02` from the [foo] section under the [bar] option value; parser manually set since it can not be determined via filename extension
+Assign the env `local_ini_02` from the `[foo]` section under the `[bar]` option value; parser manually set since it can not be determined via filename extension
 ```yaml
 env-alias:
   local_ini_02:
@@ -158,7 +158,7 @@ assign the env `local_yaml_01` from the JSON content using an xpath-style path s
 ```yaml
 env-alias:
   local_yaml_01:
-    source: '/tmp/yamlfile.yaml'
+    source: '/tmp/yamlfile.yml'
     selector: 'foo.0.bar'
 ```
 
@@ -222,7 +222,7 @@ Run the shell-command and do not assign it to any env value
 env-alias:
   exec_03:
     exec: 'head /dev/urandom | base64 -w0'
-    selector: 'null'
+    selector: null
 ```
 
 #### direct_01
