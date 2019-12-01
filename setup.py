@@ -29,7 +29,7 @@ setup(
     license='BSD 2-Clause',
 
     packages=find_packages(),
-    scripts=['bin/env-alias'],
+    scripts=['bin/env-alias', 'bin/env-alias-generator'],
 
     install_requires=['pyyaml'],
     setup_requires=['pytest-runner'],
