@@ -36,14 +36,20 @@ pip3 install env-alias
 
 #### via Source
 ```bash
-pending
+git clone https://github.com/ndejong/env-alias
+cd env-alias
+python3 -m venv venv
+./venv/bin/activate
+python3 setup.py clean build
+python3 setup.py test
+python3 setup.py install
 ```
 
 ## Project
 * [github.com/ndejong/env-alias](https://github.com/ndejong/env-alias)
 
 ## Configuration Samples
-The following examples are presented within the provided [`env-alias-sample.yml`](https://pending) file.
+The following examples are presented within the provided [`env-alias-sample.yml`](https://github.com/ndejong/env-alias/blob/master/samples/env-alias-sample.yml) file.
 
 #### local_text_01
 Assign the env `local_text_01` to the value of the 1st line of text in `/tmp/textfile.txt`

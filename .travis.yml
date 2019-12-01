@@ -9,10 +9,8 @@ python:
   - "3.8"
 
 install:
-  - pip install -r requirements.txt
-  - pip install -e .
+  - python setup.py clean build
+  - python setup.py install
 
 script:
-  - python setup.py clean
-  - python setup.py build
   - python setup.py test
