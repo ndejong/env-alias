@@ -49,8 +49,11 @@ python3 setup.py install
 ## Project
 * [github.com/ndejong/env-alias](https://github.com/ndejong/env-alias)
 
-## Configuration Samples
-The following examples are presented within the provided [`env-alias-sample.yml`](https://github.com/ndejong/env-alias/blob/master/samples/env-alias-sample.yml) file.
+## Examples
+A range of [`examples`](https://github.com/ndejong/env-alias/blob/master/examples/) are provided that demonstrate real
+world setups to configure env-variables for using AWS, Google, Terraform, Ansible etc.  Additionally the 
+[`env-alias-examples.yml`](https://github.com/ndejong/env-alias/blob/master/examples/env-alias-examples.yml) attempts 
+to iterate all possible configuration combinations, many of which are presented below.
 
 #### local_text_01
 Assign the env `local_text_01` to the value of the 1st line of text in `/tmp/textfile.txt`

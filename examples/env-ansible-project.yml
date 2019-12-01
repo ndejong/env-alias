@@ -1,0 +1,25 @@
+
+---
+
+env-alias:
+
+    ANSIBLE_VAULT_PASSWORD:
+        source: '~/secure/ansible-project/vault-pass.txt'
+
+    ANSIBLE_VAULT_PASSWORD_FILE:
+        value: '/tmp/.vault_echo_password'
+
+    ANSIBLE_VAULT_PASSWORD_ECHO_FILE:
+        exec: 'echo "#!/bin/sh" > /tmp/.vault_echo_password; echo "echo \${ANSIBLE_VAULT_PASSWORD}" >> /tmp/.vault_echo_password; chmod 700 /tmp/.vault_echo_password'
+        selector: null
+
+    ANSIBLE_SSH_PIPELINING:
+        value: '1'
+
+    ANSIBLE_SSH_KEYGEN:
+        exec: 'rm -f ~/secure/tmp/init-deployment.key; ssh-keygen -N "" -f ~/secure/tmp/init-deployment.key 2>&1'
+        selector: null
+
+    ANSIBLE_SSH_ADD:
+        exec: 'ssh-add -q ~/secure/tmp/init-deployment.key 2>&1'
+        selector: null
