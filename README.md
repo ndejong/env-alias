@@ -40,7 +40,8 @@ git clone https://github.com/ndejong/env-alias
 cd env-alias
 python3 -m venv venv
 ./venv/bin/activate
-python3 setup.py clean build
+pip3 install -r requirements.txt
+python3 setup.py clean
 python3 setup.py test
 python3 setup.py install
 ```
