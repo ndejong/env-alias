@@ -16,12 +16,16 @@ setup(
     long_description_content_type='text/markdown',
 
     classifiers=[
+        'Environment :: Console',
         'Intended Audience :: System Administrators',
         'Intended Audience :: Information Technology',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: BSD License',
     ],
-    keywords='env-alias shell env alias bash',
+    keywords=['env-alias', 'shell', 'env', 'alias', 'bash'],
 
     author='Nicholas de Jong',
     author_email='contact@nicholasdejong.com',
@@ -29,6 +33,7 @@ setup(
     license='BSD 2-Clause',
 
     packages=find_packages(),
+    zip_safe=False,
     scripts=['bin/env-alias', 'bin/env-alias-generator'],
 
     install_requires=['pyyaml'],

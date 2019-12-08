@@ -1,8 +1,9 @@
 # Env Alias
 
-[![PyPi](https://img.shields.io/pypi/v/env-alias.svg)](https://pypi.org/project/env-alias/)
-[![Build Status](https://api.travis-ci.org/ndejong/env-alias.svg?branch=master)](https://api.travis-ci.org/ndejong/env-alias)
-[![PyPi](https://img.shields.io/github/license/ndejong/env-alias.svg)](https://github.com/ndejong/env-alias)
+[![PyPi](https://img.shields.io/pypi/v/env-alias.svg)](https://pypi.python.org/pypi/env-alias/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/env-alias.svg)](https://github.com/ndejong/env-alias/)
+[![Build Status](https://api.travis-ci.org/ndejong/env-alias.svg?branch=master)](https://travis-ci.org/ndejong/env-alias/)
+[![License](https://img.shields.io/github/license/ndejong/env-alias.svg)](https://github.com/ndejong/env-alias)
 
 Helper utility to create shell alias commands that easily set collections of environment variables often with secret
 values from a variety of data-sources and data-formats.
