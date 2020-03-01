@@ -4,7 +4,9 @@ import yaml
 import configparser
 from functools import reduce
 
-from . import EnvAliasException
+
+class EnvAliasSelectorException(Exception):
+    pass
 
 
 class EnvAliasSelector:
@@ -23,20 +25,20 @@ class EnvAliasSelector:
         selector_path = EnvAliasSelector.__parse_selector_path(selector_path, 'INI').split('.')
 
         if len(selector_path) != 2:
-            raise EnvAliasException('Selector path for INI content must be in the form "<section>.<option>" only.')
+            raise EnvAliasSelectorException('Selector path for INI content must be in the form "<section>.<option>" only.')
 
         try:
             config = configparser.ConfigParser()
             config .read_string(content)
         except(Exception) as e:
-            raise EnvAliasException('Unable to parse and load the INI content data provided.', e)
+            raise EnvAliasSelectorException('Unable to parse and load the INI content data provided.', e)
 
         selector_section, selector_option = selector_path
 
         try:
             return config.get(selector_section, selector_option)
         except(Exception) as e:
-            raise EnvAliasException('Unable to locate "<section>.<option>" in INI content provided.', e)
+            raise EnvAliasSelectorException('Unable to locate "<section>.<option>" in INI content provided.', e)
 
     @staticmethod
     def json_content(content, selector_path):
@@ -45,12 +47,12 @@ class EnvAliasSelector:
         try:
             data = json.loads(content)
         except(Exception) as e:
-            raise EnvAliasException('Unable to parse and load the JSON content data provided.', e)
+            raise EnvAliasSelectorException('Unable to parse and load the JSON content data provided.', e)
 
         try:
             return EnvAliasSelector.__data_select(data, selector_path)
         except(Exception) as e:
-            raise EnvAliasException('Unable to find data at supplied path in JSON content.', e)
+            raise EnvAliasSelectorException('Unable to find data at supplied path in JSON content.', e)
 
     @staticmethod
     def yaml_content(content, selector_path):
@@ -59,12 +61,12 @@ class EnvAliasSelector:
         try:
             data = yaml.safe_load(content)
         except(Exception) as e:
-            raise EnvAliasException('Unable to parse and load the YAML content data provided.', e)
+            raise EnvAliasSelectorException('Unable to parse and load the YAML content data provided.', e)
 
         try:
             return EnvAliasSelector.__data_select(data, selector_path)
         except(Exception) as e:
-            raise EnvAliasException('Unable to find data at supplied path in YAML content.', e)
+            raise EnvAliasSelectorException('Unable to find data at supplied path in YAML content.', e)
 
     @staticmethod
     def __data_select(root, path, sep='.'):
@@ -75,6 +77,6 @@ class EnvAliasSelector:
     @staticmethod
     def __parse_selector_path(selector_path, content_type):
         if selector_path is None or len(str(selector_path)) == 0:
-            raise EnvAliasException('Selector required for {} content type, check the configuration '
+            raise EnvAliasSelectorException('Selector required for {} content type, check the configuration '
                                     'has a "selector" value.'.format(content_type))
         return ('.' + selector_path.replace('[','.').replace(']','.')).replace('..','.')[1:]

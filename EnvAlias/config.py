@@ -2,7 +2,11 @@
 import os
 import yaml
 
-from . import EnvAliasException
+from . import logger
+
+
+class EnvAliasConfigException(Exception):
+    pass
 
 
 class EnvAliasConfig:
@@ -17,7 +21,7 @@ class EnvAliasConfig:
 
     def load_config(self, configuration_file, return_config=False):
         if configuration_file is None or not os.path.isfile(configuration_file):
-            raise EnvAliasException('Unable to locate configuration file', configuration_file)
+            raise EnvAliasConfigException('Unable to locate configuration file', configuration_file)
         self.config = self.__load_config(configuration_file)
         if return_config:
             return self.config
@@ -29,7 +33,7 @@ class EnvAliasConfig:
             try:
                 loaded_config = yaml.safe_load(f.read())
             except yaml.YAMLError as e:
-                raise EnvAliasException(e)
+                raise EnvAliasConfigException(e)
 
         def replace_env_values(input):
             if input is None:
@@ -39,10 +43,10 @@ class EnvAliasConfig:
             elif type(input) is str:
                 if input.lower()[0:4] == 'env:':
                     env_name = input.replace('env:', '')
-                    self.__debug('Config element set via env value {}'.format(env_name))
+                    logger.debug('Config element set via env value {}'.format(env_name))
                     value = os.getenv(env_name, None)
                     if value is None or len(value) < 1:
-                        raise EnvAliasException('Config requested env value not set', env_name)
+                        raise EnvAliasConfigException('Config requested env value not set', env_name)
                     return value
                 return input
             elif type(input) is list:
@@ -56,15 +60,11 @@ class EnvAliasConfig:
                     r[item_k] = replace_env_values(item_v)
                 return r
             else:
-                raise EnvAliasException('Unsupported type in replace_env_values()', input)
+                raise EnvAliasConfigException('Unsupported type in replace_env_values()', input)
 
         loaded_config = replace_env_values(loaded_config)
 
         if type(loaded_config) is not dict or self.config_root not in loaded_config.keys():
-            raise EnvAliasException('Unable to locate config root', self.config_root)
+            raise EnvAliasConfigException('Unable to locate config root', self.config_root)
 
         return loaded_config[self.config_root]
-
-    def __debug(self, message):
-        if self.debug:
-            print('EnvAliasConfig debug: {}'.format(message))

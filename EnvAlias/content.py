@@ -5,7 +5,10 @@ import subprocess
 
 from . import NAME
 from . import VERSION
-from . import EnvAliasException
+
+
+class EnvAliasContentException(Exception):
+    pass
 
 
 class EnvAliasContent:
@@ -24,7 +27,7 @@ class EnvAliasContent:
         filename = os.path.expanduser(filename)
 
         if not os.path.exists(filename):
-            raise EnvAliasException('Unable to locate file required to load', filename)
+            raise EnvAliasContentException('Unable to locate file required to load', filename)
         with open(filename, 'r') as f:
             return f.read(), content_type
 
@@ -61,5 +64,5 @@ class EnvAliasContent:
         sp = subprocess.Popen(command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = sp.communicate()
         if stderr:
-            raise EnvAliasException(stderr.decode('utf8').rstrip('\n'))
+            raise EnvAliasContentException(stderr.decode('utf8').rstrip('\n'))
         return stdout.decode('utf8').rstrip('\n'), None

@@ -2,11 +2,14 @@
 import time
 import logging
 
-from . import NAME
-from . import EnvAliasException
+TIMESTAMP_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 
 
-class ColoredLoggingFormatter(logging.Formatter):
+class LoggerException(Exception):
+    pass
+
+
+class LoggerColoredFormatter(logging.Formatter):
 
     color_line = '\x1b[90m'  # grey
     color_reset = '\x1b[0m'  # reset
@@ -38,19 +41,19 @@ class ColoredLoggingFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-class EnvAliasLogger:
+class Logger:
 
+    name = None
     logger = None
-    default_level = 'info'
 
-    def __init__(self, level=None):
+    def __init__(self, name, level=None):
 
         if level is not None:
             log_level = level
         else:
-            log_level = self.default_level
+            log_level = 'info'
 
-        logger_init = logging.getLogger(NAME)
+        logger_init = logging.getLogger(name)
         if logger_init.level > 0:
             self.logger = logger_init
             return
@@ -60,7 +63,7 @@ class EnvAliasLogger:
         log_level = log_level.upper()
         stream_handler = logging.StreamHandler()
 
-        if log_level == 'CRITICAL':
+        if log_level in ('CRITICAL', 'FATAL'):
             stream_handler.setLevel(logging.CRITICAL)
         elif log_level == 'ERROR':
             stream_handler.setLevel(logging.ERROR)
@@ -71,13 +74,13 @@ class EnvAliasLogger:
         elif log_level == 'DEBUG':
             stream_handler.setLevel(logging.DEBUG)
         elif log_level is not None:
-            raise EnvAliasException('unknown loglevel value', log_level)
+            raise LoggerException('unknown loglevel value', log_level)
         else:
             stream_handler.setLevel(logging.NOTSET)
 
-        formatter = ColoredLoggingFormatter(
+        formatter = LoggerColoredFormatter(
             fmt='%(asctime)s - %(levelname)s - %(message)s',
-            datefmt='%Y%m%dZ%H%M%S'
+            datefmt=TIMESTAMP_FORMAT
         )
         logging.Formatter.converter = time.gmtime
 
@@ -85,3 +88,23 @@ class EnvAliasLogger:
         logger_init.addHandler(stream_handler)
 
         self.logger = logger_init
+
+
+def init(name, level='info'):
+    global __logger
+    __logger = Logger(name, level=level).logger
+
+def debug(message):
+    __logger.debug(message)
+
+def info(message):
+    __logger.info(message)
+
+def warning(message):
+    __logger.warning(message)
+
+def error(message):
+    __logger.error(message)
+
+def critical(message):
+    __logger.critical(message)

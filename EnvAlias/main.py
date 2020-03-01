@@ -1,28 +1,23 @@
 
 from . import NAME
 from . import VERSION
-from . import EnvAliasException
-from . import EnvAliasLogger
+
+from . import logger
+
 from . import EnvAliasConfig
 from . import EnvAliasContent
 from . import EnvAliasSelector
 
 
+class EnvAliasException(Exception):
+    pass
+
+
 class EnvAlias:
 
-    debug = None
-
-    def __init__(self, debug=False):
-
-        self.debug = debug
-
-        log_level = 'info'
-        if self.debug:
-            log_level = 'debug'
-
-        global logger
-        logger = EnvAliasLogger(level=log_level).logger
-        logger.debug('{} v{}'.format(NAME, VERSION))
+    def __init__(self, logger_level='warning'):
+        logger.init(name=NAME, level=logger_level)
+        logger.info('{} v{}'.format(NAME, VERSION))
 
     def main(self, configuration_file=None, no_space=False):
         if type(configuration_file) is list:
