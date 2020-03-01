@@ -2,8 +2,6 @@
 language: python
 
 python:
-  - "3.4"
-  #- "3.5"   # collecting ... /home/travis/.travis/functions: line 109:  3561 Segmentation fault (core dumped) pytest
   - "3.6"
   - "3.7"
   - "3.8"
