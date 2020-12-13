@@ -40,6 +40,7 @@ setuptools.setup(
   entry_points = {
     'console_scripts': [
       'env-alias = env_alias.cli.entrypoints:env_alias',
+      'env-alias-generator = env_alias.cli.entrypoints:env-alias-generator',
     ]
   },
   cmdclass = {},
