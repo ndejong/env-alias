@@ -1,0 +1,6 @@
+release_date: '2020-12-13'
+changes:
+- type: feature
+  component: general
+  description: Major project rearrangement, with full documentation
+  fixes: []
