@@ -15,7 +15,11 @@ class EnvAliasSelector:
         elif str(selector).lower() == 'null' or str(selector).lower() == 'none':
             return None
 
-        return content.split('\n')[int(selector)-1].replace('\r','')
+        lines = content.replace('\r', '').split('\n')
+        if len(lines) < int(selector):
+            raise EnvAliasException('Text selector for line number that does not exist.')
+
+        return lines[int(selector)-1]
 
     @staticmethod
     def ini_content(content, selector_path):

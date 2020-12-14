@@ -23,6 +23,10 @@ class EnvAliasGenerator:
             configuration_file=configuration_file,
             return_config=True
         )
+
+        if not configuration:
+            raise EnvAliasException('Empty configuration provided')
+
         for config_k, config_v in configuration.items():
             env_name = config_k
             if 'name' in config_v.keys():
@@ -31,46 +35,43 @@ class EnvAliasGenerator:
             if no_space is True:
                 output_prefix = ''
 
-            setting_value, setting_type = self.get_setting(config_k, config_v)
-            if setting_type is None:
-                return
+            setting_value = self.get_setting(config_k, config_v)
             if setting_value is not None:
                 output = '{}export "{}"="{}"'.format(output_prefix, env_name, setting_value)
                 logger.debug(output)
                 print(output)
-                return
-            logger.warning('env "{}" has no assignment'.format(env_name))
+            return
+        return
 
     def get_setting(self, config_key, config):
-        selector = None
-        if 'selector' in config.keys():
-            selector = config['selector']
 
-        content_type = None
         if 'value' in config.keys():
-            return config['value'], 'value'
+            return config['value']
         elif 'source' in config.keys() and config['source'][0:4] == 'http':
             content, content_type = EnvAliasContent.remote(config['source'])
         elif 'source' in config.keys():
             content, content_type = EnvAliasContent.local(config['source'])
         elif 'exec' in config.keys():
             content, content_type = EnvAliasContent.execute(config['exec'])
-            if 'selector' in config.keys() and selector is None:
-                selector = 'none'
         else:
             raise EnvAliasException('Configuration of env-alias item "{}" is malformed'.format(config_key))
 
-        parser = 'text'
+        parser = content_type
         if 'parser' in config.keys():
             parser = config['parser'].lower()
-        elif content_type is not None:
-            parser = content_type
+
+        selector = None
+        if 'selector' in config.keys():
+            if config['selector'] is None or config['selector'] == 'null':
+                selector = 'none'  # edge case where "selector" exists and set to none (or null)
+            else:
+                selector = config['selector']
 
         if parser == 'ini':
-            return EnvAliasSelector.ini_content(content, selector), content_type
+            return EnvAliasSelector.ini_content(content, selector)
         elif parser == 'json':
-            return EnvAliasSelector.json_content(content, selector), content_type
+            return EnvAliasSelector.json_content(content, selector)
         elif parser in ['yaml', 'yml']:
-            return EnvAliasSelector.yaml_content(content, selector), content_type
+            return EnvAliasSelector.yaml_content(content, selector)
 
-        return EnvAliasSelector.text_content(content, selector), content_type
+        return EnvAliasSelector.text_content(content, selector)

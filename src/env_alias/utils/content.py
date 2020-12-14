@@ -72,6 +72,4 @@ class EnvAliasContent:
         stdout, stderr = sp.communicate()
         if stderr:
             raise EnvAliasException(stderr.decode('utf8').rstrip('\n'))
-
-        logger.debug('Config not classified')
         return stdout.decode('utf8').rstrip('\n'), None

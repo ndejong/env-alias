@@ -23,6 +23,7 @@ class EnvAliasConfig:
         self.config = self.__load_config(configuration_file)
         if return_config:
             return self.config
+        return
 
     def __load_config(self, config_filename):
         loaded_config = {}
