@@ -21,7 +21,11 @@ requirements = [
 
 setuptools.setup(
   name = 'env-alias',
+<<<<<<< HEAD
   version = '0.3.4',
+=======
+  version = '0.3.0',
+>>>>>>> 18fafcd6b250d053d6f854f154623e33601fe2b9
   author = 'Nicholas de Jong',
   author_email = 'contact@nicholasdejong.com',
   description = 'Powerful helper utility to create shell alias commands to easily set collections of environment variables often with secret values from a variety of data-sources and data-formats.',
@@ -40,7 +44,10 @@ setuptools.setup(
   entry_points = {
     'console_scripts': [
       'env-alias = env_alias.cli.entrypoints:env_alias',
+<<<<<<< HEAD
       'env-alias-generator = env_alias.cli.entrypoints:env_alias_generator',
+=======
+>>>>>>> 18fafcd6b250d053d6f854f154623e33601fe2b9
     ]
   },
   cmdclass = {},
