@@ -1,7 +1,6 @@
 
 import os
 import sys
-<<<<<<< HEAD
 
 import tempfile
 import random, string
@@ -25,6 +24,3 @@ def __rewrite_configuration_file(configuration_file, **kwargs):
         f.write(config)
 
     return temp_configuration_file
-=======
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'env_alias'))
->>>>>>> 18fafcd6b250d053d6f854f154623e33601fe2b9
