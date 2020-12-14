@@ -1,0 +1,5 @@
+
+env-alias:
+    local_ini_01:
+        source: '{source}'
+        selector: 'foo.bar'

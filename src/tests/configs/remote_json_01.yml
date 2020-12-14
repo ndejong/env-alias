@@ -1,0 +1,5 @@
+
+env-alias:
+    remote_json_01:
+        source: 'https://ip-ranges.amazonaws.com/ip-ranges.json'
+        selector: '.prefixes[2].ip_prefix'

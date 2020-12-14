@@ -1,0 +1,6 @@
+
+env-alias:
+    exec_02:
+        exec: 'curl -s https://ip-ranges.amazonaws.com/ip-ranges.json'
+        parser: 'json'
+        selector: '.prefixes[1].ip_prefix'

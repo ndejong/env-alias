@@ -1,0 +1,5 @@
+
+env-alias:
+    remote_text_01:
+        source: 'http://textfiles.com/computers/144disk.txt'
+        selector: 1

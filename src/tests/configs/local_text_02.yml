@@ -1,0 +1,5 @@
+
+env-alias:
+    local_text_02:
+        source: '{source}'
+        selector: '2'

@@ -1,0 +1,4 @@
+
+env-alias:
+    direct_01:
+        value: 'somevalue'

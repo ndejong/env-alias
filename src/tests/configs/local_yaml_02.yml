@@ -1,0 +1,6 @@
+
+env-alias:
+    local_yaml_02:
+        source: '{source}'
+        selector: '.foo[2].bar'
+        parser: 'yaml'

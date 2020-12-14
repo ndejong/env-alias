@@ -1,0 +1,4 @@
+
+env-alias:
+    direct_02:
+        value: 'env:HOME'

@@ -1,0 +1,4 @@
+
+env-alias:
+    exec_01:
+        exec: 'head /dev/urandom | base64 -w0 | tr -d "/" | tr -d "+" | head -c20'

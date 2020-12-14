@@ -1,0 +1,6 @@
+
+foo:
+  - bar: value01
+  - bar: value02
+  - bar: value03
+  - bar: value04

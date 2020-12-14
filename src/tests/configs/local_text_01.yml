@@ -1,0 +1,4 @@
+
+env-alias:
+    local_text_01:
+        source: '{source}'

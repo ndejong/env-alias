@@ -1,0 +1,5 @@
+
+env-alias:
+    direct_03:
+        name: 'direct_03_override_name'
+        value: 'env:HOME'
