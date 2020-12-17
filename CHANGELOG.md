@@ -1,3 +1,8 @@
+## 0.3.5 (2020-12-14)
+
+* __general__
+    * **fix**: fixes broken merge
+
 ## 0.3.4 (2020-12-14)
 
 * __general__

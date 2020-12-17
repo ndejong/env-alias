@@ -21,6 +21,8 @@ environments alike.
 * Content-Type detection for http-remote data-sources to automatically assign appropriate parser
 * Run exec helper commands without content assignment for creating setups 
 * Debug mode output to STDERR
+* Easy installation using PyPI `pip`
+* Plenty of documentation and examples - https://env-alias.readthedocs.io
 
 ## Installation
 ```shell
