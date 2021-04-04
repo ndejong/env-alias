@@ -55,4 +55,4 @@ Be sure to review the examples that make the benefits of this arrangement clear.
 * ReadTheDocs - [env-alias.readthedocs.io](https://env-alias.readthedocs.io)
 
 ---
-Copyright &copy; 2020 Nicholas de Jong
+Copyright &copy; 2021 Nicholas de Jong
