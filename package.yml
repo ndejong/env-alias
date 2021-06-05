@@ -18,6 +18,7 @@ test-driver:
 
 requirements:
   - python ^3.6
+  - click >=7.1
   - pyyaml
 
 classifiers:
