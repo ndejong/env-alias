@@ -46,6 +46,6 @@ setuptools.setup(
   },
   cmdclass = {},
   keywords = ['env-alias', 'shell', 'env', 'alias', 'bash'],
-  classifiers = ['Environment :: Console', 'Intended Audience :: Developers', 'Intended Audience :: Information Technology', 'Programming Language :: Python :: 3.6', 'Programming Language :: Python :: 3.7', 'Programming Language :: Python :: 3.8', 'License :: OSI Approved :: BSD License'],
+  classifiers = ['Environment :: Console', 'Intended Audience :: Developers', 'Intended Audience :: Information Technology', 'Programming Language :: Python :: 3.6', 'Programming Language :: Python :: 3.7', 'Programming Language :: Python :: 3.8', 'Programming Language :: Python :: 3.9', 'License :: OSI Approved :: BSD License'],
   zip_safe = True,
 )

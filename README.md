@@ -2,7 +2,7 @@
 
 [![PyPi](https://img.shields.io/pypi/v/env-alias.svg)](https://pypi.python.org/pypi/env-alias/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/env-alias.svg)](https://github.com/ndejong/env-alias/)
-[![Build Status](https://api.travis-ci.org/ndejong/env-alias.svg?branch=master)](https://travis-ci.org/ndejong/env-alias/)
+[![Build Status](https://github.com/ndejong/env-alias/actions/workflows/build-tests.yml/badge.svg)](https://github.com/ndejong/env-alias/actions/workflows/build-tests.yml)
 [![Read the Docs](https://img.shields.io/readthedocs/env-alias)](https://env-alias.readthedocs.io)
 ![License](https://img.shields.io/github/license/ndejong/env-alias.svg)
 
