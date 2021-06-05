@@ -22,7 +22,7 @@ requirements = [
 
 setuptools.setup(
   name = 'env-alias',
-  version = '0.3.5',
+  version = '0.3.6',
   author = 'Nicholas de Jong',
   author_email = 'contact@nicholasdejong.com',
   description = 'Powerful helper utility to create shell alias commands to easily set collections of environment variables often with secret values from a variety of data-sources and data-formats.',
