@@ -26,7 +26,7 @@ environments alike.
 
 ## Installation
 ```shell
-user@computer:~$ pip3 install env-alias
+user@computer:~$ pip install env-alias
 ```
 
 ## Command Line Usage
@@ -51,7 +51,6 @@ Be sure to review the examples that make the benefits of this arrangement clear.
 ## Project
 * Github - [github.com/ndejong/env-alias](https://github.com/ndejong/env-alias)
 * PyPI - [pypi.python.org/pypi/env-alias](https://pypi.python.org/pypi/env-alias/)
-* TravisCI - [travis-ci.org/github/ndejong/env-alias](https://travis-ci.org/github/ndejong/env-alias)
 * ReadTheDocs - [env-alias.readthedocs.io](https://env-alias.readthedocs.io)
 
 ---
