@@ -1,9 +1,8 @@
 
 import os
 import tempfile
-import random, string
-import pytest
-from unittest.mock import patch
+import random
+import string
 from env_alias.EnvAliasGenerator import EnvAliasGenerator
 
 

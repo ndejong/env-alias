@@ -72,7 +72,7 @@ class EnvAliasSelector:
     @staticmethod
     def __data_select(root, path, sep='.'):
         return reduce(
-            lambda acc, nxt: acc[nxt],[int(x) if x.isdigit() else x for x in path.split(sep)], root
+            lambda acc, nxt: acc[nxt], [int(x) if x.isdigit() else x for x in path.split(sep)], root
         )
 
     @staticmethod
@@ -80,4 +80,4 @@ class EnvAliasSelector:
         if selector_path is None or len(str(selector_path)) == 0:
             raise EnvAliasException('Selector required for {} content type, check the configuration '
                                     'has a "selector" value.'.format(content_type))
-        return ('.' + selector_path.replace('[','.').replace(']','.')).replace('..','.')[1:]
+        return ('.' + selector_path.replace('[', '.').replace(']', '.')).replace('..', '.')[1:]

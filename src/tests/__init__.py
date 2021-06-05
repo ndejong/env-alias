@@ -3,7 +3,8 @@ import os
 import sys
 
 import tempfile
-import random, string
+import random
+import string
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'env_alias'))
 

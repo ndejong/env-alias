@@ -23,15 +23,16 @@ def env_alias_generator():
         description='{} v{}'.format(NAME, VERSION),
         add_help=False,
         epilog="""
-            Helper tool to create shell alias commands to easily set collections of environment variables, often with 
-            secrets, from a variety of sources and formats.  Typically this tool is invoked via an entry in `.bash_aliases`
-            with an entry in the form `eval $(env-alias my-alias-name ~/path-to/my-alias-name-config-file.yml)` where this 
-            example would hence establish a shell alias for the command `my-alias-name` that then invokes this 
-            `env-alias-generator` with the configuration from `~/path-to/my-alias-name-config-file.yml`.  The result then 
-            is that the environment variables defined in the configuration are loaded into the current shell.  This 
-            provides an easy mechanism to manage sets of environment variables with values from encrypted or otherwise 
-            secured data-sources through one simple alias command and a configuration file that can safely be committed 
-            to source control without exposing secret values.
+            Helper tool to create shell alias commands to easily set collections of environment variables, often with
+            secrets, from a variety of sources and formats.  Typically this tool is invoked via an entry in
+            `.bash_aliases` with an entry in the form
+            `eval $(env-alias my-alias-name ~/path-to/my-alias-name-config-file.yml)` where this example would hence
+            establish a shell alias for the command `my-alias-name` that then invokes this `env-alias-generator` with
+            the configuration from `~/path-to/my-alias-name-config-file.yml`.  The result then is that the environment
+            variables defined in the configuration are loaded into the current shell.  This provides an easy mechanism
+            to manage sets of environment variables with values from encrypted or otherwise secured data-sources
+            through one simple alias command and a configuration file that can safely be committed to source control
+            without exposing secret values.
         """,
     )
 
