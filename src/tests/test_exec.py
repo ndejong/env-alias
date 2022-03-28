@@ -1,17 +1,16 @@
-
 import os
 import tempfile
 import random
 import string
-from env_alias.EnvAliasGenerator import EnvAliasGenerator
+from env_alias.env_alias_generator import EnvAliasGenerator
 
 
 def test_sample_exec_01(capsys):
 
-    yaml = '''
+    yaml = """
     sample_exec_01:
         exec: 'head /dev/urandom | base64 -w0 | tr -d "/" | tr -d "+" | head -c20'
-    '''
+    """
 
     configuration_file = __generate_config_file(yaml)
     EnvAliasGenerator().main(configuration_file=configuration_file)
@@ -24,12 +23,12 @@ def test_sample_exec_01(capsys):
 
 def test_sample_exec_02(capsys):
 
-    yaml = '''
+    yaml = """
     sample_exec_02:
         exec: 'curl -s https://ip-ranges.amazonaws.com/ip-ranges.json'
         parser: 'json'
         selector: '.prefixes[1].ip_prefix'
-    '''
+    """
 
     configuration_file = __generate_config_file(yaml)
     EnvAliasGenerator().main(configuration_file=configuration_file)
@@ -42,11 +41,11 @@ def test_sample_exec_02(capsys):
 
 def test_sample_exec_03(capsys):
 
-    yaml = '''
+    yaml = """
     sample_exec_03:
         exec: 'head /dev/urandom | base64 -w0 | tr -d "/" | tr -d "+" | head -c20'
         selector: null
-    '''
+    """
 
     configuration_file = __generate_config_file(yaml)
     EnvAliasGenerator().main(configuration_file=configuration_file)
@@ -58,8 +57,8 @@ def test_sample_exec_03(capsys):
 
 
 def __generate_config_file(yaml_config):
-    config = 'env-alias:' + yaml_config
-    filename = os.path.join(tempfile.gettempdir(), ''.join(random.choice(string.ascii_lowercase) for i in range(8)))
-    with open(filename, 'w') as f:
+    config = "env-alias:" + yaml_config
+    filename = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
+    with open(filename, "w") as f:
         f.write(config)
     return filename

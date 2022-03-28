@@ -1,24 +1,24 @@
-
 import os
 import tempfile
 import random
 import string
-from env_alias.EnvAliasGenerator import EnvAliasGenerator
+from env_alias.env_alias_generator import EnvAliasGenerator
 
 
 def test_sample_local_yaml_01(capsys):
 
     test_file = os.path.join(
-        tempfile.gettempdir(),
-        ''.join(random.choice(string.ascii_lowercase) for i in range(8)) + '.json'
+        tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)) + ".json"
     )
     __write_json_test_file(test_file)
 
-    yaml = '''
+    yaml = """
     sample_local_json_01:
         source: '{}'
         selector: 'foo.1.bar'
-    '''.format(test_file)
+    """.format(
+        test_file
+    )
 
     configuration_file = __generate_config_file(yaml)
     EnvAliasGenerator().main(configuration_file=configuration_file)
@@ -31,18 +31,17 @@ def test_sample_local_yaml_01(capsys):
 
 def test_sample_local_yaml_02(capsys):
 
-    test_file = os.path.join(
-        tempfile.gettempdir(),
-        ''.join(random.choice(string.ascii_lowercase) for i in range(8))
-    )
+    test_file = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
     __write_json_test_file(test_file)
 
-    yaml = '''
+    yaml = """
     sample_local_json_02:
         source: '{}'
         selector: '.foo[1].bar'
         parser: 'json'
-    '''.format(test_file)
+    """.format(
+        test_file
+    )
 
     configuration_file = __generate_config_file(yaml)
     EnvAliasGenerator().main(configuration_file=configuration_file)
@@ -54,15 +53,15 @@ def test_sample_local_yaml_02(capsys):
 
 
 def __generate_config_file(yaml_config):
-    config = 'env-alias:' + yaml_config
-    filename = os.path.join(tempfile.gettempdir(), ''.join(random.choice(string.ascii_lowercase) for i in range(8)))
-    with open(filename, 'w') as f:
+    config = "env-alias:" + yaml_config
+    filename = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
+    with open(filename, "w") as f:
         f.write(config)
     return filename
 
 
 def __write_json_test_file(filename):
-    config = '''
+    config = """
     {
         "foo": [
             {"bar": "value01"},
@@ -71,7 +70,7 @@ def __write_json_test_file(filename):
             {"bar": "value04"}
         ]
     }
-    '''
-    with open(filename, 'w') as f:
+    """
+    with open(filename, "w") as f:
         f.write(config)
     return filename

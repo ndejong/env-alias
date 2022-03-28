@@ -1,12 +1,14 @@
+import sys
+import argparse
 
 from env_alias import __title__ as NAME
 from env_alias import __version__ as VERSION
 from env_alias import __logger_default_level__ as LOGGER_DEFAULT_LEVEL
-from env_alias.exceptions.EnvAliasException import EnvAliasException
+from env_alias.exceptions import EnvAliasException
 
 
 def env_alias():
-    from env_alias.EnvAlias import EnvAlias
+    from env_alias.env_alias import EnvAlias
 
     try:
         EnvAlias().main()
@@ -15,12 +17,10 @@ def env_alias():
 
 
 def env_alias_generator():
-    import sys
-    import argparse
-    from env_alias.EnvAliasGenerator import EnvAliasGenerator
+    from env_alias.env_alias_generator import EnvAliasGenerator
 
     parser = argparse.ArgumentParser(
-        description='{} v{}'.format(NAME, VERSION),
+        description="{} v{}".format(NAME, VERSION),
         add_help=False,
         epilog="""
             Helper tool to create shell alias commands to easily set collections of environment variables, often with
@@ -36,11 +36,13 @@ def env_alias_generator():
         """,
     )
 
-    parser.add_argument('config', metavar='<config-file>', type=str, nargs=1,
-                        help='An env-alias YAML style configuration file.')
+    parser.add_argument(
+        "config", metavar="<config-file>", type=str, nargs=1, help="An env-alias YAML style configuration file."
+    )
 
-    parser.add_argument('-d', '--debug', action='store_true', default=False,
-                        help='Debug logging output (default: False).')
+    parser.add_argument(
+        "-d", "--debug", action="store_true", default=False, help="Debug logging output (default: False)."
+    )
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -50,7 +52,7 @@ def env_alias_generator():
     args = parser.parse_args()
 
     if args.debug:
-        logger_level = 'debug'
+        logger_level = "debug"
     else:
         logger_level = LOGGER_DEFAULT_LEVEL
 
@@ -61,10 +63,10 @@ def env_alias_generator():
 
 
 def __entrypoint_exception_handler(e):
-    print('')
-    print('{} v{}'.format(NAME, VERSION))
-    print('ERROR: ', end='')
+    print("")
+    print("{} v{}".format(NAME, VERSION))
+    print("ERROR: ", end="")
     for err in iter(e.args):
         print(err)
-    print('')
+    print("")
     exit(9)

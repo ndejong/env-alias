@@ -1,23 +1,23 @@
-
 import os
 import tempfile
 import random
 import string
-from env_alias.EnvAliasGenerator import EnvAliasGenerator
+from env_alias.env_alias_generator import EnvAliasGenerator
 
 
 def test_sample_local_text_01(capsys):
 
     test_file = os.path.join(
-        tempfile.gettempdir(),
-        ''.join(random.choice(string.ascii_lowercase) for i in range(8)) + '.txt'
+        tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)) + ".txt"
     )
     __write_text_test_file(test_file)
 
-    yaml = '''
+    yaml = """
     sample_local_text_01:
         source: '{}'
-    '''.format(test_file)
+    """.format(
+        test_file
+    )
 
     configuration_file = __generate_config_file(yaml)
     EnvAliasGenerator().main(configuration_file=configuration_file)
@@ -30,17 +30,16 @@ def test_sample_local_text_01(capsys):
 
 def test_sample_local_text_02(capsys):
 
-    test_file = os.path.join(
-        tempfile.gettempdir(),
-        ''.join(random.choice(string.ascii_lowercase) for i in range(8))
-    )
+    test_file = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
     __write_text_test_file(test_file)
 
-    yaml = '''
+    yaml = """
     sample_local_text_02:
         source: '{}'
         selector: '2'
-    '''.format(test_file)
+    """.format(
+        test_file
+    )
 
     configuration_file = __generate_config_file(yaml)
     EnvAliasGenerator().main(configuration_file=configuration_file)
@@ -52,19 +51,19 @@ def test_sample_local_text_02(capsys):
 
 
 def __generate_config_file(yaml_config):
-    config = 'env-alias:' + yaml_config
-    filename = os.path.join(tempfile.gettempdir(), ''.join(random.choice(string.ascii_lowercase) for i in range(8)))
-    with open(filename, 'w') as f:
+    config = "env-alias:" + yaml_config
+    filename = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
+    with open(filename, "w") as f:
         f.write(config)
     return filename
 
 
 def __write_text_test_file(filename):
-    config = '''value01
+    config = """value01
 value02
 value03
 value04
-    '''
-    with open(filename, 'w') as f:
+    """
+    with open(filename, "w") as f:
         f.write(config)
     return filename
