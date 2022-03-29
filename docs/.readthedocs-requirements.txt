@@ -1,4 +1,5 @@
 
+nr.preconditions==0.0.4
 shut==0.21.1
 pydoc-markdown==4.3.0
 readthedocs-custom-steps==0.5.1
