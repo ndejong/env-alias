@@ -26,10 +26,10 @@ environments alike.
 
 ## Installation
 ```shell
-user@computer:~$ pip install env-alias
+pip install env-alias
 ```
 
-## Command Line Usage
+## Usage
 This tool is typically invoked via an entry in `.bash_aliases` with an entry in the form:-
 ```shell
 eval $(env-alias env-project-awesome ~/path-to/project-awesome-alias.yml)
@@ -47,6 +47,12 @@ or otherwise secured data-sources which means an environment configuration can b
 source control without the secret values.
 
 Be sure to review the examples that make the benefits of this arrangement clear.
+
+### Version
+Check which version of env-alias is installed
+```shell
+env-alias --version
+```
 
 ## Project
 * Github - [github.com/ndejong/env-alias](https://github.com/ndejong/env-alias)
