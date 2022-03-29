@@ -1,0 +1,5 @@
+changes:
+- type: fix
+  component: general
+  description: Adds minor feature to check which version of env-alias is installed
+release_date: '2022-03-29'
