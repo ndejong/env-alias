@@ -1,14 +1,61 @@
 import time
 import logging
 
-TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S %Z%z"
+__logger_default_format__ = "%(asctime)s - %(levelname)s - %(message)s"
+__logger_default_dateformat__ = "%Y-%m-%dT%H:%M:%S%z"
 
 
 class LoggerException(Exception):
     pass
 
 
-class LoggerColoredFormatter(logging.Formatter):
+class Logger:
+
+    name = None
+    logging = None
+    default_level = "info"
+
+    def __init__(self, name):
+        self.name = name
+        self.logging = logging.getLogger(self.name)
+
+    def setup(self, level=None, fmt=__logger_default_format__, datefmt=__logger_default_dateformat__):
+
+        logger_init = logging.getLogger(self.name)
+        stream_handler = logging.StreamHandler()
+
+        if level is not None:
+            log_level = level.upper()
+        else:
+            log_level = self.default_level.upper()
+
+        if log_level == "CRITICAL":
+            logger_init.setLevel(logging.CRITICAL)
+            stream_handler.setLevel(logging.CRITICAL)
+        elif log_level == "ERROR":
+            logger_init.setLevel(logging.ERROR)
+            stream_handler.setLevel(logging.ERROR)
+        elif log_level in ("WARNING", "WARN"):
+            logger_init.setLevel(logging.WARNING)
+            stream_handler.setLevel(logging.WARNING)
+        elif log_level == "INFO":
+            logger_init.setLevel(logging.INFO)
+            stream_handler.setLevel(logging.INFO)
+        elif log_level == "DEBUG":
+            logger_init.setLevel(logging.DEBUG)
+            stream_handler.setLevel(logging.DEBUG)
+        else:
+            raise LoggerException("unknown logger level value", log_level)
+
+        logging.Formatter.converter = time.localtime
+        stream_handler.setFormatter(LoggerColorFormatter(fmt=fmt, datefmt=datefmt))
+        logger_init.addHandler(stream_handler)
+
+        self.logging = logger_init
+        return self.logging
+
+
+class LoggerColorFormatter(logging.Formatter):
 
     color_line = "\x1b[90m"  # grey
     color_reset = "\x1b[0m"  # reset
@@ -35,77 +82,5 @@ class LoggerColoredFormatter(logging.Formatter):
         else:
             color_code = "\x1b[90m"  # grey
 
-        record.levelname = "{}{}{}".format(color_code, levelname, self.color_line)
-
+        record.levelname = "{}{}{}{}".format(color_code, levelname, self.color_reset, self.color_line)
         return logging.Formatter.format(self, record)
-
-
-class Logger:
-
-    name = None
-    logger = None
-
-    def __init__(self, name, level=None):
-
-        if level is not None:
-            log_level = level
-        else:
-            log_level = "info"
-
-        logger_init = logging.getLogger(name)
-        if logger_init.level > 0:
-            self.logger = logger_init
-            return
-
-        logger_init.setLevel(logging.DEBUG)
-
-        log_level = log_level.upper()
-        stream_handler = logging.StreamHandler()
-
-        if log_level in ("CRITICAL", "FATAL"):
-            stream_handler.setLevel(logging.CRITICAL)
-        elif log_level == "ERROR":
-            stream_handler.setLevel(logging.ERROR)
-        elif log_level in ("WARNING", "WARN"):
-            stream_handler.setLevel(logging.WARNING)
-        elif log_level == "INFO":
-            stream_handler.setLevel(logging.INFO)
-        elif log_level == "DEBUG":
-            stream_handler.setLevel(logging.DEBUG)
-        elif log_level is not None:
-            raise LoggerException("unknown loglevel value", log_level)
-        else:
-            stream_handler.setLevel(logging.NOTSET)
-
-        formatter = LoggerColoredFormatter(fmt="%(asctime)s - %(levelname)s - %(message)s", datefmt=TIMESTAMP_FORMAT)
-        logging.Formatter.converter = time.localtime
-
-        stream_handler.setFormatter(formatter)
-        logger_init.addHandler(stream_handler)
-
-        self.logger = logger_init
-
-
-def init(name, level="info"):
-    global __logger
-    __logger = Logger(name, level=level).logger
-
-
-def debug(message):
-    __logger.debug(message)
-
-
-def info(message):
-    __logger.info(message)
-
-
-def warning(message):
-    __logger.warning(message)
-
-
-def error(message):
-    __logger.error(message)
-
-
-def critical(message):
-    __logger.critical(message)

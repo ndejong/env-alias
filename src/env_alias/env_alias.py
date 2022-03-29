@@ -1,5 +1,5 @@
 import sys
-from env_alias import __env_alias_generator__ as ENV_ALIAS_GENERATOR
+from env_alias import __env_alias_generator__
 
 
 class EnvAlias:
@@ -8,4 +8,4 @@ class EnvAlias:
         if len(args) < 2 or len(args) > 3:
             print("Usage: env-alias <alias> [-d] <config.yml>")
         else:
-            print('alias "{}"="source <({} {})"'.format(args[0], ENV_ALIAS_GENERATOR, " ".join(args[1:])))
+            print('alias "{}"="source <({} {})"'.format(args[0], __env_alias_generator__, " ".join(args[1:])))

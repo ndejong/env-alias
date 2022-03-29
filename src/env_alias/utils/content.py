@@ -2,10 +2,13 @@ import os
 import urllib.request
 import subprocess
 
-from env_alias import __title__ as NAME
-from env_alias import __version__ as VERSION
-from env_alias.utils import logger
+from env_alias import __title__
+from env_alias import __version__
+from env_alias.utils.logger import Logger
 from env_alias.exceptions import EnvAliasException
+
+
+logger = Logger(name=__title__).logging
 
 
 class EnvAliasContent:
@@ -25,17 +28,17 @@ class EnvAliasContent:
         if not os.path.exists(filename):
             raise EnvAliasException("Unable to locate file required to load", filename)
 
-        logger.debug("Config content from: {}".format(filename))
+        logger.debug(f"Config content from: {filename}")
         with open(filename, "r") as f:
             content = f.read()
 
-        logger.debug("Config classified as: {}".format(content_type))
+        logger.debug(f"Config classified as: {content_type}")
         return content, content_type
 
     @staticmethod
     def remote(url):
 
-        req = urllib.request.Request(url, headers={"User-Agent": "{}/{}".format(NAME, VERSION)})
+        req = urllib.request.Request(url, headers={"User-Agent": "{}/{}".format(__title__, __version__)})
 
         logger.debug("Config content from: {}".format(url))
         with urllib.request.urlopen(req) as res:

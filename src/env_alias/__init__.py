@@ -6,5 +6,5 @@ __author__ = "Nicholas de Jong <contact@nicholasdejong.com>"
 __version__ = "0.3.7"
 __license__ = "BSD2"
 
-__logger_default_level__ = "info"
+__logger_default_level__ = "error"
 __env_alias_generator__ = "env-alias-generator"

@@ -1,30 +1,32 @@
-from env_alias import __title__ as NAME
-from env_alias import __version__ as VERSION
+from env_alias import __title__
+from env_alias import __version__
 
-from env_alias.utils import logger
-from env_alias.exceptions import EnvAliasException
+from env_alias.utils.logger import Logger
 from env_alias.utils.config import EnvAliasConfig
 from env_alias.utils.content import EnvAliasContent
 from env_alias.utils.selector import EnvAliasSelector
+from env_alias.exceptions import EnvAliasException
+
+
+logger = Logger(name=__title__).logging
 
 
 class EnvAliasGenerator:
     def __init__(self, logger_level="warning"):
-        logger.init(name=NAME, level=logger_level)
-        logger.info("{} v{}".format(NAME, VERSION))
+        Logger(name=__title__).setup(level=logger_level)
+        logger.info(f"{__title__} v{__version__}")
 
-    def main(self, configuration_file=None, no_space=False):
+    def main(self, configuration_file=None, no_space=False) -> None:
+
         if isinstance(configuration_file, list):
             configuration_file = configuration_file[0]
 
-        configuration = EnvAliasConfig(config_root=NAME).load_config(
-            configuration_file=configuration_file, return_config=True
-        )
+        config = EnvAliasConfig(config_root=__title__, configuration_file=configuration_file).config
 
-        if not configuration:
+        if not config:
             raise EnvAliasException("Empty configuration provided")
 
-        for config_k, config_v in configuration.items():
+        for config_k, config_v in config.items():
             env_name = config_k
             if "name" in config_v.keys():
                 env_name = config_v["name"]
@@ -37,10 +39,9 @@ class EnvAliasGenerator:
                 output = '{}export "{}"="{}"'.format(output_prefix, env_name, setting_value)
                 logger.debug(output)
                 print(output)
-            return
-        return
 
     def get_setting(self, config_key, config):
+        logger.debug(f"{__name__} get_setting(config_key={config_key} <config>)")
 
         if "value" in config.keys():
             return config["value"]
