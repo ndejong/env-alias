@@ -1,0 +1,4 @@
+
+env-alias:
+    sample_exec_bad_01:
+        exec: 'unknown-command-JHKJKHGJKHG'

@@ -1,0 +1,14 @@
+
+env-alias:
+
+    test_override_01:
+        value: "value01"
+
+    test_override_02a:
+        name: test_override_02
+        value: "value02"
+
+    test_override_02b:
+        name: test_override_02
+        value: "other02value"
+        override: false

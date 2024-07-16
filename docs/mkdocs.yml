@@ -1,0 +1,30 @@
+
+docs_dir: content
+site_name: "Env Alias"
+
+nav:
+  - Home: index.md
+
+  - Definition Attributes:
+    - definition-attributes/overview.md
+    - definition-attributes/source.md
+    - definition-attributes/parser.md
+    - definition-attributes/selector.md
+    - definition-attributes/name.md
+    - definition-attributes/value.md
+    - definition-attributes/exec.md
+    - definition-attributes/override.md
+    - definition-attributes/keepass-password.md
+    - definition-attributes/ansible-vault-password.md
+    - definition-attributes/ansible-vault-password-file.md
+
+  - Examples:
+    - examples/terraform-aws-project.md
+    - examples/aws-credentials.md
+    - examples/ansible-project.md
+    - examples/debugging.md
+
+  - Other:
+    - project.md
+    - development.md
+    - license.md

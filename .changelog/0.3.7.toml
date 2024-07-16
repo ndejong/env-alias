@@ -1,0 +1,7 @@
+release-date = "2022-03-29"
+
+[[entries]]
+id = "ed680068-13b2-490d-8265-f524b84f194a"
+type = "fix"
+description = "Black code cleanup; Add pylint; fix various pylint warnings"
+author = "ndejong@threatpatrols.com"

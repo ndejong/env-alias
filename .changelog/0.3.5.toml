@@ -1,0 +1,7 @@
+release-date = "2020-12-14"
+
+[[entries]]
+id = "f38dbde7-4546-4373-b72b-9b5334c59e95"
+type = "fix"
+description = "fixes broken merge"
+author = "ndejong@threatpatrols.com"

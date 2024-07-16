@@ -1,0 +1,7 @@
+release-date = "2024-09-21"
+
+[[entries]]
+id = "21e601b7-bf89-4861-8c61-f7359aa43da0"
+type = "refactor"
+description = "Large upgrade and improvements to env-alias"
+author = "ndejong@threatpatrols.com"

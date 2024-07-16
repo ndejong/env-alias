@@ -1,6 +1,0 @@
-release_date: '2021-06-05'
-changes:
-- type: fix
-  component: general
-  description: migration from TravisCI to Github actions
-  fixes: []

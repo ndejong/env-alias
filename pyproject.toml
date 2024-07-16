@@ -1,0 +1,101 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "env-alias"
+version = "0.5.1"
+description = "Powerful helper utility to create shell alias commands to easily set collections of environment variables often with secret values from a variety of data-sources and data-formats."
+authors = ["Nicholas de Jong <contact@nicholasdejong.com>"]
+license = "BSD-2-Clause"
+readme = "README.md"
+packages = [{ include = "env_alias", from = "src" }]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
+keywords = ["env-alias", "shell", "env", "alias", "bash"]
+
+
+[tool.poetry.urls]
+Documentation = "https://env-alias.readthedocs.io/"
+Homepage = "https://github.com/ndejong/env-alias"
+Repository = "https://github.com/ndejong/env-alias"
+"Bug Tracker" = "https://github.com/ndejong/env-alias/issues"
+
+[tool.poetry.scripts]
+env-alias = "env_alias.main:entrypoint"
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pyyaml  = ">=5.0"               # https://pypi.org/project/pyyaml/#history
+
+[tool.poetry.dev-dependencies]
+black = ">=23.0"                # https://pypi.org/project/black/#history
+flake8 = ">=7.1"                # https://pypi.org/project/flake8/#history
+isort = ">=5.13"                # https://pypi.org/project/isort/#history
+mypy = ">=1.10"                 # https://pypi.org/project/mypy/#history
+pycln = ">=2.4"                 # https://pypi.org/project/pycln/#history
+pytest = ">=8.2"                # https://pypi.org/project/pytest/#history
+safety = ">=3.2"                # https://pypi.org/project/safety/#history
+types-aiofiles = ">=23.2"       # https://pypi.org/project/types-aiofiles/#history
+types-PyYAML = ">=6.0"          # https://pypi.org/project/types-PyYAML/#history
+# NB: pip installs in .readthedocs.yml need to be kept up-to-date manually
+novella = ">=0.2"               # https://pypi.org/project/novella/#history
+pydoc-markdown = ">=4.8"        # https://pypi.org/project/pydoc-markdown/#history
+mkdocs-material = ">=9.5"       # https://pypi.org/project/mkdocs-material/#history
+
+[tool.poetry.plugins."slap.plugins.check"]
+changelog = "slap.ext.checks.changelog:ChangelogValidationCheckPlugin"
+general = "slap.ext.checks.general:GeneralChecksPlugin"
+poetry = "slap.ext.checks.poetry:PoetryChecksPlugin"
+release = "slap.ext.checks.release:ReleaseChecksPlugin"
+
+[tool.slap]
+typed = true
+release.branch = "dev"
+
+[tool.slap.test]
+check = "slap check"
+black = "black --check src/ tests/"
+flake8 = "flake8 src/ tests/"
+isort = "isort --check-only src/ tests/"
+mypy = "dmypy run src/"
+pycln  = "pycln src/ tests/ --check"
+safety = "pip freeze | safety check --stdin --short-report --output text"
+pytest = "pytest tests/ -vv"
+
+[tool.slap.run]
+format = "black src/ tests/ && isort src/ tests/"
+docs-build = "cd docs && novella --base-url env-alias/"
+docs-server = "cd docs && novella --serve"
+
+[tool.mypy]
+explicit_package_bases = true
+ignore_missing_imports = true
+mypy_path = ["src"]
+namespace_packages = true
+pretty = true
+python_version = "3.8"
+show_error_codes = true
+show_error_context = true
+strict = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+[tool.isort]
+profile = "black"
+line_length = 120
+combine_as_imports = true
+
+[tool.black]
+line-length = 120

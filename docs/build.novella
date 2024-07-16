@@ -1,0 +1,17 @@
+
+template "mkdocs" {
+    content_directory = "content"
+}
+
+action "mkdocs-update-config" {
+    site_name = "Env Alias"
+    update '$.theme.features' add: ['navigation.sections']
+    update '$.theme.features' add: ['content.code.copy']
+    update '$.theme.palette' add: {'scheme': 'default', 'primary': 'orange'}
+    update '$.theme.icon' add: {'logo': 'octicons/terminal-24'}
+    update '$.theme' add: {'favicon': 'assets/terminal-128x128.png'}
+}
+
+action "preprocess-markdown" {
+    use "pydoc"
+}

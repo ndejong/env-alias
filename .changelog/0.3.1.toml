@@ -1,0 +1,7 @@
+release-date = "2020-12-13"
+
+[[entries]]
+id = "c03537a1-23a1-4765-a0e1-76e8f851b375"
+type = "feature"
+description = "Major project rearrangement, with full documentation"
+author = "ndejong@threatpatrols.com"

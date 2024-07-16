@@ -1,0 +1,17 @@
+
+env-alias:
+
+    password_for_ansible_vault:
+        name: null
+        source: "tests/data/envalias-ansible-vault-datafile-password.txt"
+        selector: 7
+
+    test_value_username:
+        source: "tests/data/envalias-ansible-vault-datafile.vault"
+        ansible_vault: "env:password_for_ansible_vault"
+        selector: "all/vars/vault/project_foobar/username"
+
+    test_value_password:
+        source: "tests/data/envalias-ansible-vault-datafile.vault"
+        ansible_vault: "env:password_for_ansible_vault"
+        selector: "all/vars/vault/project_foobar/password"

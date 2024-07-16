@@ -1,0 +1,17 @@
+
+env-alias:
+
+    password_for_keepass_database:
+        name: null
+        source: "tests/data/envalias-keepass-database-password.txt"
+        selector: 7
+
+    test_value_username:
+        source: "tests/data/envalias-keepass-database.kdbx"
+        keepass_password: "env:password_for_keepass_database"
+        selector: "group02/subgroup02b/envalias-test02:Username"
+
+    test_value_password:
+        source: "tests/data/envalias-keepass-database.kdbx"
+        keepass_password: "env:password_for_keepass_database"
+        selector: "group02/subgroup02b/envalias-test02:Password"

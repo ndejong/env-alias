@@ -4,53 +4,39 @@ on: [push]
 
 jobs:
 
-  build:
+  test:
+    name: "Test package"
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
-
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
-    - name: Install actions/checkout@v2
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    - uses: NiklasRosenstein/slap@gha/install/v1
+      with: { version: "1.12.0" }
 
-    - name: Install actions/setup-python@v2 for ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with: { python-version: "${{ matrix.python-version }}" }
 
-    - name: Python version
-      run: python -c "import sys; print(sys.version)"
-
-    - name: Install dependencies
+    - name: Install required keepassxc
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade pyyaml
+        sudo apt-get -y update
+        sudo apt-get install -y keepassxc
 
-    - name: flake8 lint
+    - name: Create a venv to operate within using slap-cli
       run: |
-        python -m pip install --upgrade flake8
-        # https://flake8.pycqa.org/en/latest/user/error-codes.html
-        # https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
-        flake8 ./src --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 ./src --count --exit-zero --max-complexity=20 --max-line-length=120 --statistics
+        slap venv --create tester
 
-    - name: python setup.py clean build
+    - name: Install, test and build a package to install
       run: |
-        python -m pip install --upgrade wheel setuptools
-        python setup.py clean build
+        slap release --validate
+        slap install --use-venv=tester
+        slap test --use-venv=tester
+        mkdir build-tester
+        slap publish --build-directory build-tester --dry
 
-    - name: pytest
+    - name: Install the package from whl and run the application
       run: |
-        python -m pip install --upgrade pytest
-        pytest
-
-    - name: python setup.py install
-      run: |
-        python setup.py install
-
-    - name: which env-alias
-      run: |
-        which env-alias
-        which env-alias-generator
+        pip install build-tester/*.whl
+        env-alias --version
