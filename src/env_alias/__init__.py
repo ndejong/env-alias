@@ -1,10 +1,16 @@
-# -*- coding: utf8 -*-
-# Copyright (c) 2020 Nicholas de Jong
+#
+# Copyright [2020] Nicholas de Jong (https://www.nicholasdejong.com)
+#
 
-__title__ = "env-alias"
-__author__ = "Nicholas de Jong <contact@nicholasdejong.com>"
-__version__ = "0.4.0"
-__license__ = "BSD2"
+from os import getenv
+from sys import argv
 
-__logger_default_level__ = "error"
-__env_alias_generator__ = "env-alias-generator"
+__title__ = "Env Alias"
+__version__ = "0.5.0"
+
+LOGGER_LEVEL = "info"
+if "--debug" in argv or getenv("ENVALIAS_DEBUG", "").lower().startswith(("true", "yes", "enable", "on")):
+    LOGGER_LEVEL = "debug"
+
+LOGGER_NAME = "env-alias"
+DEFINITIONS_ROOT = "env-alias"

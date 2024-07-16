@@ -1,0 +1,14 @@
+
+env-alias:
+
+    input01:
+        source: '<getpass>'
+        name: 'AWESOME_INPUT01'
+
+    input02:
+        source: '<getpass>'
+        name: 'AWESOME_INPUT02'
+
+    input03:
+        source: '<getpass>'
+        name: 'AWESOME_INPUT03'

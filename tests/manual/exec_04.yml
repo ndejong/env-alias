@@ -1,0 +1,5 @@
+
+env-alias:
+    exec_04_legacy_none:
+        exec: 'head /dev/urandom | base64 -w0 | tr -d "/" | tr -d "+" | head -c20'
+        selector: none
