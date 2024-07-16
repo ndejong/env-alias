@@ -1,0 +1,7 @@
+release-date = "2022-03-29"
+
+[[entries]]
+id = "d6aa2f98-c752-46ac-a6ac-c1f0121d3973"
+type = "fix"
+description = "Adds minor feature to check which version of env-alias is installed"
+author = "ndejong@threatpatrols.com"

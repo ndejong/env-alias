@@ -1,6 +1,0 @@
-release_date: '2020-12-14'
-changes:
-- type: fix
-  component: general
-  description: fixes broken merge
-  fixes: []

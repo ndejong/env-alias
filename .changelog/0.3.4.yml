@@ -1,7 +1,0 @@
-release_date: '2020-12-14'
-changes:
-- type: fix
-  component: general
-  description: Fixes bug with null/none return types from exec and re-arranges test
-    input data files
-  fixes: []

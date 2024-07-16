@@ -1,0 +1,7 @@
+release-date = "2020-12-13"
+
+[[entries]]
+id = "69de0ed6-ef5e-4137-bf24-cbfb911d81b5"
+type = "fix"
+description = "Fix typo in package entrypoint"
+author = "ndejong@threatpatrols.com"

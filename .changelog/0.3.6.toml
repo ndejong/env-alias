@@ -1,0 +1,7 @@
+release-date = "2021-06-05"
+
+[[entries]]
+id = "7a0b5694-27bb-45af-a6dd-bf043fe26184"
+type = "fix"
+description = "migration from TravisCI to Github actions"
+author = "ndejong@threatpatrols.com"

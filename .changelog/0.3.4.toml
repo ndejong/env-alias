@@ -1,0 +1,7 @@
+release-date = "2020-12-14"
+
+[[entries]]
+id = "2a344d45-7195-4491-9e25-0a0631dbaf85"
+type = "fix"
+description = "Fixes bug with null/none return types from exec and re-arranges test input data files"
+author = "ndejong@threatpatrols.com"

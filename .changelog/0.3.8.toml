@@ -1,0 +1,7 @@
+release-date = "2022-03-29"
+
+[[entries]]
+id = "229aa4d2-73d2-4095-bb1e-03f72e6b857c"
+type = "fix"
+description = "Fixes bug with an early return preventing more than one env-alias setting; changes the old Logger class out for something a little more standard; move the readdocs-custom-steps file out of the way"
+author = "ndejong@threatpatrols.com"
