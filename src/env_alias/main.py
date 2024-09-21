@@ -63,9 +63,10 @@ def handle_args(args: List[str]) -> Tuple[str, str]:
 
 def usage_help(exit_code: Union[int, None] = None) -> None:
     print()
-    print("Usage: env-alias [<alias>] [--debug] <definitions.[yml|yaml]>")
+    print(f"{__title__} v{__version__}")
     print()
-    print("Docs: https://env-alias.readthedocs.io/en/latest/")
+    print("Usage: env-alias [<alias>] [--debug] <definitions.[yml|yaml]>")
+    print("Docs: https://env-alias.readthedocs.io")
     print()
     if exit_code:
         exit(exit_code)

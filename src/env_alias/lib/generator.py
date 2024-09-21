@@ -39,6 +39,8 @@ class EnvAliasGenerator:
 
             if value is not None:  # NB: not just "if value" because value could be a valid empty string
                 self.values_generated[definition.name] = value
+                os.environ[definition.name] = str(value)  # exists at this process and sub-process only
+
                 if definition._is_internal_only is True:
                     logger.debug(
                         f"Definition for {definition.name!r} defines a 'null' name for env-alias internal "
