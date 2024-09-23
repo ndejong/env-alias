@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "env-alias"
-version = "0.5.1"
+version = "0.5.2"
 description = "Powerful helper utility to create shell alias commands to easily set collections of environment variables often with secret values from a variety of data-sources and data-formats."
 authors = ["Nicholas de Jong <contact@nicholasdejong.com>"]
 license = "BSD-2-Clause"
