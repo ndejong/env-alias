@@ -50,6 +50,10 @@ class EnvAliasDefinitions:
             if not definition_item.get("name"):
                 definition_item["name"] = definition_key
 
+            if definition_item["name"] in ("none", "None"):
+                _name = definition_item.get("name")
+                logger.warning(f"Definition name is '{_name}' did you mean 'null' instead?")
+
             try:
                 definitions.append(EnvAliasDefinition(**definition_item))
             except TypeError as e:
