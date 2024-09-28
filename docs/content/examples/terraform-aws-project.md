@@ -16,8 +16,8 @@ values are contained within.
 env-alias:
 
     TF_PLUGIN_CACHE_DIR_CREATE:
+        name: null
         exec: 'mkdir -p ~/.terraform.d/plugin-cache'
-        name: none
 
     TF_PLUGIN_CACHE_DIR:
         value: '~/.terraform.d/plugin-cache'

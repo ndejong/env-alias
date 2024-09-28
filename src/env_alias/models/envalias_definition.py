@@ -21,6 +21,7 @@ class EnvAliasDefinition:
 
     parser: Union[str, None] = None
     selector: Union[str, None] = _UNSET_SENTINEL
+    value_to: Union[str, None] = None
 
     keepass_password: Union[str, None] = None
     ansible_vault_password: Union[str, None] = None
@@ -38,6 +39,11 @@ class EnvAliasDefinition:
             raise EnvAliasException(f"Cannot use 'source' and 'value' {_EXCEPTION_END}")
         if not self.source and not self.exec and not self.value and not self.ansible_vault_password_file:
             raise EnvAliasException(f"Must have one 'source', 'exec' or 'value' {_EXCEPTION_END}")
+
+        if isinstance(self.value_to, str):
+            self.value_to = self.value_to.lower()
+            if self.value_to not in ("<stderr>", "<stdout>"):
+                raise EnvAliasException(f"Invalid 'value_to' value, must be '<stderr>' or '<stdout>' {_EXCEPTION_END}")
 
         if self.keepass_password and self.ansible_vault_password:
             raise EnvAliasException(f"Cannot use both 'keepass_password' and 'ansible_vault_password' {_EXCEPTION_END}")

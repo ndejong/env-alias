@@ -41,6 +41,14 @@ class EnvAliasGenerator:
                 self.values_generated[definition.name] = value
                 os.environ[definition.name] = str(value)  # exists at this process and sub-process only
 
+                if definition.value_to:
+                    if definition.value_to == "<stderr>":
+                        print(value, file=sys.stderr)
+                    elif definition.value_to == "<stdout>":
+                        print(value, file=sys.stdout)
+                    else:
+                        raise EnvAliasException("Unsupported 'value_to' value encountered.")
+
                 if definition._is_internal_only is True:
                     logger.debug(
                         f"Definition for {definition.name!r} defines a 'null' name for env-alias internal "

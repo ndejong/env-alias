@@ -12,6 +12,7 @@ nav:
     - definition-attributes/selector.md
     - definition-attributes/name.md
     - definition-attributes/value.md
+    - definition-attributes/value-to.md
     - definition-attributes/exec.md
     - definition-attributes/override.md
     - definition-attributes/keepass-password.md
