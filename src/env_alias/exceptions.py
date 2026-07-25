@@ -1,4 +1,4 @@
-from typing import Any, List, Union
+from typing import Any
 
 from . import LOGGER_LEVEL, LOGGER_NAME
 from .lib.logger import logger_get
@@ -7,7 +7,7 @@ logger = logger_get(name=LOGGER_NAME, loglevel=LOGGER_LEVEL)
 
 
 class EnvAliasBaseException(Exception):
-    def __init__(self, *args: Union[str, List[Any]], **kwargs: Any) -> None:
+    def __init__(self, *args: str | list[Any], **kwargs: Any) -> None:
         log_message = " ".join([str(x) for x in args]).strip()
         if log_message:
             logger.error(f"{log_message}")

@@ -1,7 +1,6 @@
 import os
 import sys
 from pathlib import Path
-from typing import List, Tuple, Union
 
 from . import LOGGER_LEVEL, LOGGER_NAME, __title__, __version__
 from .exceptions import EnvAliasException
@@ -38,7 +37,7 @@ def entrypoint() -> None:
         print(alias_command)
 
 
-def handle_args(args: List[str]) -> Tuple[str, str]:
+def handle_args(args: list[str]) -> tuple[str, str]:
     debug_switch = False
     if "--debug" in args:
         debug_switch = True
@@ -61,7 +60,7 @@ def handle_args(args: List[str]) -> Tuple[str, str]:
     return alias_name, generator_args
 
 
-def usage_help(exit_code: Union[int, None] = None) -> None:
+def usage_help(exit_code: int | None = None) -> None:
     print()
     print(f"{__title__} v{__version__}")
     print()
