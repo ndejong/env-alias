@@ -1,24 +1,11 @@
 import logging
-from typing import Any, Callable, Union
+from typing import Any
 
 LOGGING_FORMAT = "%(asctime)s | %(levelname)s | __name__ | %(message)s"
 LOGGING_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
 
-class LoggerNone:
-    def __getattr__(self, _: Any) -> Callable[..., Any]:
-        def empty(*_: Any) -> None:
-            pass
-
-        return empty
-
-
-def logger_get(
-    name: Union[str, None], loglevel: str = "warning", logfile: Union[str, None] = None
-) -> Union[logging.Logger, LoggerNone]:
-    if name is None:
-        return LoggerNone()
-
+def logger_get(name: str, loglevel: str = "warning", logfile: str | None = None) -> logging.Logger:
     logger = logging.getLogger(name)
     if logger.handlers:
         return logger
@@ -42,13 +29,13 @@ def logger_get(
             file_handler.setLevel(logging_level)
             file_handler.setFormatter(logging_formatter)
             logger.addHandler(file_handler)
-    except (FileNotFoundError, PermissionError):
-        raise PermissionError(f"Unable to write to logfile at: {logfile}")
+    except (FileNotFoundError, PermissionError) as e:
+        raise PermissionError(f"Unable to write to logfile at: {logfile}") from e
 
     return logger
 
 
-def logger_setlevel(name: str, loglevel: str) -> Union[logging.Logger, LoggerNone]:
+def logger_setlevel(name: str, loglevel: str) -> logging.Logger:
     logger = logger_get(name)
     logging_level = __logger_level_int(loglevel)
 
@@ -65,7 +52,7 @@ def __logger_level_int(loglevel: str) -> int:
     try:
         int(logging_level)
     except ValueError:
-        raise ValueError(f"Unknown loglevel requested: {loglevel}")
+        raise ValueError(f"Unknown loglevel requested: {loglevel}") from None
 
     return int(logging_level)
 
@@ -75,7 +62,7 @@ class LoggingFormatterWrapper(logging.Formatter):
 
     def __init__(self, **kwargs: Any) -> None:
         if "name" in kwargs:
-            kwargs["fmt"] = kwargs.get("fmt", Any).replace("__name__", kwargs["name"])
+            kwargs["fmt"] = kwargs.get("fmt", LOGGING_FORMAT).replace("__name__", kwargs["name"])
             del kwargs["name"]
         if "colorize_levelname" in kwargs:
             self.colorize_levelname = True
@@ -105,6 +92,6 @@ class LoggingFormatterWrapper(logging.Formatter):
 
         if color_code:
             color_reset = "\x1b[0m"  # reset
-            record.levelname = "{}{}{}".format(color_code, record.levelname, color_reset)
+            record.levelname = f"{color_code}{record.levelname}{color_reset}"
 
         return logging.Formatter.format(self, record)

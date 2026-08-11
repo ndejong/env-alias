@@ -1,7 +1,9 @@
 # License
 
-## BSD 2 Clause
 ```text
+Copyright 2020 Nicholas de Jong
+Copyright 2025 Threat Patrols Pty Ltd
+
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
@@ -23,9 +25,3 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
-
-## Copyright
- - Copyright &copy; 2020 [Nicholas de Jong](https://www.nicholasdejong.com)
- - Copyright &copy; 2025 [Threat Patrols Pty Ltd](https://www.threatpatrols.com)
-
-All rights reserved.

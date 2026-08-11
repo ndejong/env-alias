@@ -1,63 +1,111 @@
+import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
 from . import LOGGER_LEVEL, LOGGER_NAME, __title__, __version__
 from .exceptions import EnvAliasException
-from .lib.logger import logger_get
+from .lib.logger import logger_get, logger_setlevel
 
 logger = logger_get(name=LOGGER_NAME, loglevel=LOGGER_LEVEL)
 
+# Alias names (unlike environment variable names) may contain hyphens, e.g.
+# ``env-awesome-vars``. Hyphens are safe inside the double-quoted alias-name
+# in the emitted ``alias`` statement — the P0-2 injection hardening guarded
+# against ``$`\\`` characters, not ``-``.
+_ALIAS_NAME_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_-]*")
+
 
 def entrypoint() -> None:
-    args = sys.argv[1:]
+    parser = argparse.ArgumentParser(
+        description=f"{__title__} v{__version__}",
+        epilog="Usage: env-alias [<alias>] [--debug] <definitions.[yml|yaml]>",
+        add_help=False,
+    )
+    parser.add_argument("--version", action="version", version=f"{__title__} v{__version__}")
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--generator", action="store_true")
+    parser.add_argument("args", nargs="*")
 
-    if "--version" in args:
-        print(f"{__title__} v{__version__}")
+    try:
+        args = parser.parse_args()
 
-    elif "--generator" in args:
-        from env_alias.lib.generator import EnvAliasGenerator
+        if args.debug:
+            logger_setlevel(LOGGER_NAME, "debug")
 
-        try:
-            EnvAliasGenerator(config_file=Path(args[-1])).generate()
-        except EnvAliasException:
-            print("Exiting", file=sys.stderr)
-            exit(0)
-        except KeyboardInterrupt:
-            print("Exiting", file=sys.stderr)
-            exit(0)
+        if args.generator:
+            if not args.args:
+                usage_help(exit_code=0)
+            from env_alias.lib.generator import EnvAliasGenerator
 
-    elif len(args) < 1 or len(args) > 3:
-        usage_help(exit_code=0)
+            EnvAliasGenerator(config_file=[Path(f) for f in args.args]).generate()
+            return
 
-    else:
-        alias_name, generator_args = handle_args(args)
-        alias_command = f'alias "{alias_name}"="source <(env-alias --generator {generator_args})"'
-        logger.debug(alias_command)
-        print(alias_command)
+        if not args.args:
+            usage_help(exit_code=0)
+            return
 
+        # Process positionals for alias mode. The result is a list of
+        # (alias_name, filename) pairs, one entry per alias to emit.
+        if len(args.args) == 1:
+            # Single arg: derive alias name from the filename basename.
+            entries = [
+                (
+                    os.path.splitext(os.path.basename(args.args[0]))[0],
+                    args.args[0],
+                )
+            ]
+        elif len(args.args) >= 2:
+            if os.path.isfile(args.args[0]):
+                # First arg is a file: ALL args are definition files. Emit one
+                # alias per file, each name inferred from its own basename, so a
+                # single invocation defines N independent lazily-loaded aliases.
+                entries = [(os.path.splitext(os.path.basename(f))[0], f) for f in args.args]
+            else:
+                # First arg is an explicit alias name — only a single definition
+                # file may follow; with multiple files the intent is ambiguous.
+                alias_name = args.args[0]
+                trailing = args.args[1:]
+                if len(trailing) > 1:
+                    raise EnvAliasException(
+                        f"An explicit alias name may be followed by only one definition file, got {len(trailing)}."
+                    )
+                entries = [(alias_name, trailing[0])]
+        else:
+            usage_help(exit_code=0)
+            return
 
-def handle_args(args: list[str]) -> tuple[str, str]:
-    debug_switch = False
-    if "--debug" in args:
-        debug_switch = True
-        del args[args.index("--debug")]
+        # Validate every inferred/explicit alias name up front so that a single
+        # bad name never yields partial alias output on stdout.
+        for alias_name, _ in entries:
+            if not _ALIAS_NAME_RE.fullmatch(alias_name):
+                raise EnvAliasException(f"Invalid alias name {alias_name!r}: must match ^[A-Za-z_][A-Za-z0-9_-]*$")
 
-    if len(args) == 1:
-        alias_name = os.path.splitext(os.path.basename(args[0]))[0]
-        logger.debug(f"Alias name {alias_name!r} inferred from definitions file-name.")
-        filename = args[0]
-    else:
-        alias_name = args[0]
-        logger.debug(f"Alias name {alias_name!r} user provided.")
-        filename = " ".join(args[1:])
+        # Emit one alias per entry. Each RHS runs the generator against that
+        # entry's single definition file only, preserving per-alias lazy loading.
+        generator_cmd = "env-alias"
+        if args.debug:
+            generator_cmd += " --debug"
+        for alias_name, filename in entries:
+            quoted_file = "'" + filename.replace("'", "'\\''") + "'"
+            rhs = f"source <({generator_cmd} --generator {quoted_file})"
 
-    generator_args = f"{filename!r}"
+            rhs_dq = rhs.replace("\\", "\\\\").replace('"', '\\"').replace("$", "\\$").replace("`", "\\`")
+            alias_command = f'alias "{alias_name}"="{rhs_dq}"'
+            logger.debug(alias_command)
+            print(alias_command)
 
-    if debug_switch:
-        generator_args = f"--debug {generator_args}"
-
-    return alias_name, generator_args
+    except EnvAliasException:
+        print("Exiting", file=sys.stderr)
+        exit(1)
+    except KeyboardInterrupt:
+        print("Exiting", file=sys.stderr)
+        exit(130)
+    except SystemExit as e:
+        if e.code == 0:
+            return
+        exit(e.code)
 
 
 def usage_help(exit_code: int | None = None) -> None:
@@ -67,5 +115,5 @@ def usage_help(exit_code: int | None = None) -> None:
     print("Usage: env-alias [<alias>] [--debug] <definitions.[yml|yaml]>")
     print("Docs: https://threatpatrols.github.io/env-alias/")
     print()
-    if exit_code:
+    if exit_code is not None:
         exit(exit_code)

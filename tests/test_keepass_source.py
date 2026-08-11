@@ -1,10 +1,21 @@
 import os
 import random
+import shutil
 import string
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from env_alias.lib.generator import EnvAliasGenerator
+
+pytestmark = [
+    pytest.mark.requires_keepassxc,
+    pytest.mark.skipif(
+        shutil.which("keepassxc-cli") is None,
+        reason="keepassxc-cli not found on PATH",
+    ),
+]
 
 
 def test_keepass_01(capsys):

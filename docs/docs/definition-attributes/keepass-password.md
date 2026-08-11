@@ -1,46 +1,25 @@
 # keepass_password
 
-The `keepass_password` definition-attribute is used to send a password through keepass-cli when opening a Keepass
-file that hence makes it possible select values inside Keepass files. 
+Use `keepass_password` with a KeePass `.kdbx` file source. Env Alias requires `keepassxc-cli` on
+`PATH` and passes the database password to it through STDIN without invoking a shell.
 
+For KeePass sources, `selector` has the form `<entry-path>:<attribute>`. The attribute can be
+`Username`, `Password`, or another KeePass entry attribute; attribute names are case-sensitive.
 
-### Example - keepass
+## Example
 
 ```yaml
 env-alias:
 
   MYPROJECT_KEEPASS_PASSPHRASE:
-    source: "<getpass>"  # obtain value from user-input using getpass method
-    override: false  # if this env-value exists then skip setting again
-    
-  MYPROJECT_KEEPASS_FILE:
-    name: null  # prevent this value being assigned into env with this name
-    exec: 'echo "$(git rev-parse --show-toplevel)/secrets/myproject-keepass.kdbx"'
-    
+    name: null
+    source: "<getpass>"
+
   MYPROJECT_SECRET_VALUE:
-    source: "env:MYPROJECT_KEEPASS_FILE"
-    selector: "keepass-folder-name/keepass-entry-name:Password"
+    source: "~/.config/myproject/secrets.kdbx"
+    selector: "team/ci:Username"
     keepass_password: "env:MYPROJECT_KEEPASS_PASSPHRASE"
 ```
 
-The example above demonstrates how it is possible to collect a keepass password into an environment variable
-with user-input and use this to open and access contents within a Keepass file.
-
-**NB:** case-sensitive "Password" expression in the selector expression, similarly, "Username" is case-sensitive too.
-
-
-## Under the hood
-Under the hood env-alias wraps a command line to exec a keepass-cli command as shown -
-
-```python
-random_envvar = "".join(random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for i in range(16))
-os.environ[random_envvar] = password
-
-command_line = (
-    f' printf "${"{" + random_envvar + "}"}" | "{keepassxc_cli}" show '
-    f'--quiet --show-protected --attributes "{keepass_attribute}" "{str(filename)}" "{keepass_path}"'
-)
-
-execute_content = EnvAliasSource.execute(command_line)
-os.unsetenv(random_envvar)
-```
+`MYPROJECT_KEEPASS_PASSPHRASE` is internal to the generator run, while
+`MYPROJECT_SECRET_VALUE` is exported with the selected KeePass attribute.

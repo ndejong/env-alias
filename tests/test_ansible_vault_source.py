@@ -1,13 +1,19 @@
-import os
-import random
-import string
-import tempfile
-from pathlib import Path
+import shutil
+
+import pytest
 
 from env_alias.lib.generator import EnvAliasGenerator
 
+pytestmark = [
+    pytest.mark.requires_ansible_vault,
+    pytest.mark.skipif(
+        shutil.which("ansible-vault") is None,
+        reason="ansible-vault not found on PATH",
+    ),
+]
 
-def test_ansiblevault_01(capsys):
+
+def test_ansiblevault_01(capsys, config_file):
     yaml = """
     password_for_ansible_vault:
         name: null
@@ -25,18 +31,9 @@ def test_ansiblevault_01(capsys):
         selector: "all/vars/vault/project_foobar/password"
     """
 
-    config_file = __generate_config_file(yaml)
-    EnvAliasGenerator(config_file=config_file).generate()
-    os.unlink(config_file)
+    f = config_file(yaml)
+    EnvAliasGenerator(config_file=f).generate()
 
     captured = capsys.readouterr().out.rstrip()
-    assert ' export "test_value_username"="foo"' in captured
-    assert ' export "test_value_password"="bar"' in captured
-
-
-def __generate_config_file(yaml_config) -> Path:
-    config = "env-alias:" + yaml_config
-    filename = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
-    with open(filename, "w") as f:
-        f.write(config)
-    return Path(filename)
+    assert " export \"test_value_username\"='foo'" in captured
+    assert " export \"test_value_password\"='bar'" in captured

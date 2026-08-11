@@ -2,23 +2,24 @@
 
 [![PyPi](https://img.shields.io/pypi/v/env-alias.svg)](https://pypi.python.org/pypi/env-alias/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/env-alias.svg)](https://github.com/threatpatrols/env-alias/)
-[![Build Status](https://github.com/threatpatrols/env-alias/actions/workflows/build-tests.yml/badge.svg)](https://github.com/threatpatrols/env-alias/actions/workflows/build-tests.yml)
+[![Build Status](https://github.com/threatpatrols/env-alias/actions/workflows/project-tests.yml/badge.svg)](https://github.com/threatpatrols/env-alias/actions/workflows/project-tests.yml)
 ![License](https://img.shields.io/github/license/threatpatrols/env-alias.svg)
 
+## Project links
 
-## Project Links
+* Docs: [threatpatrols.github.io/env-alias](https://threatpatrols.github.io/env-alias)
+* PyPI: [pypi.org/project/env-alias](https://pypi.org/project/env-alias/)
+* GitHub: [github.com/threatpatrols/env-alias](https://github.com/threatpatrols/env-alias)
 
- - Docs - [threatpatrols.github.io/env-alias](https://threatpatrols.github.io/env-alias)
- - PyPI - [pypi.python.org/pypi/env-alias](https://pypi.python.org/pypi/env-alias/)
- - Github - [github.com/threatpatrols/env-alias](https://github.com/threatpatrols/env-alias)
+This project migrated from `github.com/ndejong/env-alias` to `github.com/threatpatrols/env-alias` in
+March 2025.
 
-This project was migrated from `github.com/ndejong/env-alias` to `github.com/threatpatrols/env-alias` in March 2025.
+## Feedback
 
-
-## Features / Bugs 
-Please submit all feature-requests and bug-reports via Github issues
-
- -  [https://github.com/threatpatrols/env-alias/issues](https://github.com/ndejong/env-alias/issues)
+Public issue creation is currently disabled. Send bug reports and feature requests to
+[ndejong@threatpatrols.com](mailto:ndejong@threatpatrols.com). For a vulnerability, follow the private
+reporting instructions on the [Security](security.md) page instead.
 
 ## Contact
- - Threat Patrols, continuous cybersecurity threat management - [www.threatpatrols.com](https://www.threatpatrols.com/)
+
+[Threat Patrols](https://www.threatpatrols.com/) provides continuous cybersecurity threat management.

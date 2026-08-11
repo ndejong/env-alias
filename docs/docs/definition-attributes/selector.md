@@ -1,43 +1,52 @@
 # selector
 
-Selectors make it possible to "pick" a value from the parsed content.  
+The `selector` attribute chooses one value from parsed content.
 
-Structured content formats (ini, yaml, json) support selectors using -
- - slash-notation (eg: `/foo/bar`)
- - dot-notation (eg: `foo.0.bar`)
- - brace-notation (eg: `foo[0]bar`)
+JSON and YAML selectors support equivalent dot, slash, and bracket forms, for example:
 
-Text files support line-number selectors only; by default selector value is one (`1`) for text
-content type, thus if omitted the first line only will be selected.
+* `service.ports.0.number`
+* `/service/ports/0/number`
+* `service.ports[0].number`
 
-NB: previous versions of env-alias supported a none/null selector that worked in teh same way as a none/null name, this
-has been dropped in favour of a name-is-null only mechanism for such functionality. 
+INI selectors use exactly `<section>.<option>`. All structured parsers require a selector, and JSON
+or YAML selections must resolve to a scalar (`string`, number, or boolean), not a mapping or list.
 
+Plaintext selectors are one-based line numbers. If a plaintext selector is omitted, Env Alias returns
+line 1.
 
-### Example - dot-notation
-Make a selection from a structured data source using dot-notation
-
-```yaml
-env-alias:
-    EXAMPLE:
-        source: "https://ip-ranges.amazonaws.com/ip-ranges.json"
-        selector: ".prefixes[1].ip_prefix"
-```
+`selector: null` and literal `selector: none` remain supported as legacy no-output sentinels for
+normal parsed-source paths. They do not suppress direct `value`, `<stdin>`, `<getpass>`, KeePass, or
+`parser: none` results. Use `name: null` when a definition must never export a value.
 
 
-### Example - slash-notation
-Make a selection from a structured data source using slash-notation
+### Example - JSON path
+
+Select a nested scalar with a dot/bracket path.
 
 ```yaml
 env-alias:
     EXAMPLE:
-        source: "https://ip-ranges.amazonaws.com/ip-ranges.json"
-        selector: "/prefixes[1]/ip_prefix"
+        source: "config.json"
+        selector: ".services[1].url"
 ```
 
 
-### Example - line-number
-Make a selection from a flat text file by line number only
+### Example - INI path
+
+Select an option from an INI section.
+
+```yaml
+env-alias:
+    EXAMPLE:
+        source: "~/.aws/credentials"
+        parser: ini
+        selector: "default.aws_access_key_id"
+```
+
+
+### Example - line number
+
+Select line 5 from plaintext content.
 
 ```yaml
 env-alias:

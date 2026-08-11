@@ -1,0 +1,46 @@
+release-date = "2026-08-09"
+
+# env-alias 0.7.0 — multi-file definitions, robustness and doc overhaul
+# This is a significant release over the previous 0.5.x series: it folds in the
+# earlier P0#8211;P3 hardening work plus the new multi-file feature.
+
+[[entries]]
+id = "10ced5d5-e732-46fa-a0ac-c63adfb1acd4"
+type = "feature"
+description = "Multi-file definition support: a single invocation such as `env-alias a.yml b.yml c.yml` now emits one alias per file (name inferred from each file's own basename), each lazily loading only its own file. This collapses many `env-alias` process startups into one."
+author = "ndejong@threatpatrols.com"
+
+[[entries]]
+id = "46411570-ac92-4f5b-a5d6-3e49c0337f48"
+type = "feature"
+description = "Alias names may now contain hyphens (e.g. `env-awesome-vars`); an explicit alias name is restricted to a single following definition file (multi-file with an explicit name is rejected as ambiguous)."
+author = "ndejong@threatpatrols.com"
+
+[[entries]]
+id = "920636e2-8c1c-48ef-a6f6-e39ef0d67590"
+type = "fix"
+description = "A definition file with an empty/null `env-alias:` root now raises a clean error instead of an unhandled AttributeError traceback."
+author = "ndejong@threatpatrols.com"
+
+[[entries]]
+id = "f35c1faa-26c9-4d5b-97dc-cb24641ec6fc"
+type = "refactor"
+description = "Documentation overhaul: README and docs pages rewritten for two-phase (alias-definition vs invocation) model, all usage patterns, an attribute reference and a new Troubleshooting page; development docs moved to the Makefile/uv toolchain; security doc notes that `--debug` can surface secret material."
+author = "ndejong@threatpatrols.com"
+
+[[entries]]
+id = "772c1d2b-db06-46d8-937f-060e912191f5"
+type = "chore"
+description = "Tooling: `make typecheck` now also covers tests (cleaned annotations, enabled reportGeneralTypeIssues); `make smoke-wheel` cleans stale wheels and aborts on failure instead of reporting false success; Makefile help no longer claims tests run offline."
+author = "ndejong@threatpatrols.com"
+[[entries]]
+id = "6f3b11a9-3e2f-4c0a-9d01-4f2a8c0b1e31"
+type = "chore"
+description = "Test toolchain hardening: remote-source tests now run against a local http.server fixture instead of live URLs (one opt-in network smoke test remains); the suite registers pytest markers (network/slow/requires_keepassxc/requires_ansible_vault) and skips keepass/vault tests when the external binary is absent; `make test` runs the fast offline set while new `make test-all` covers the full suite (used by CI); a `--cov-fail-under=80` floor prevents coverage regressions; unreachable `LoggerNone` removed."
+author = "ndejong@threatpatrols.com"
+
+[[entries]]
+id = "77c4d2b1-4f3a-5b7e-8c2d-9e5f0a1d3c21"
+type = "chore"
+description = "Release tooling: version bumping moved from unreadable inline Makefile Python to `scripts/bump_version.py` with `make bump-major` added; new release-metadata tests assert `importlib.metadata.version` matches `__version__` and that every user-facing model attribute has a documented and nav-listed definition-attributes page."
+author = "ndejong@threatpatrols.com"

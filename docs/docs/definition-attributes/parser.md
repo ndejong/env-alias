@@ -1,15 +1,24 @@
 # parser
 
-The parser defines the deserializer used to parse the source-content.
+The `parser` attribute controls how local, remote, and `exec` content is deserialised before selection.
+When omitted, Env Alias infers `ini`, `json`, or `yaml` from a file extension or HTTP `Content-Type` header.
+All other content is treated as plaintext.
 
-If the parser is not explicitly defined, EnvAlias will estimate what to use based on filename
-extension or the http-remote `Content-Type` response header.
+Supported explicit parser values are:
 
-All other source-content is treated as plain text.
+* `ini`
+* `json`
+* `yaml` or `yml`
+* `none` - return the complete raw content without parsing or selecting it
 
+There is no explicit `text` parser. Omit `parser` for plaintext content; use a line-number `selector`
+to choose a line, or omit the selector to use line 1. Structured parsers require a `selector`, and a
+JSON or YAML selector must resolve to a scalar value rather than a mapping or list.
 
-### Example - ini
-Parse the `aws_access_key_id` from a standard AWS credentials file.
+### Example - INI
+
+Parse `aws_access_key_id` from a standard AWS credentials file.
+
 ```yaml
 env-alias:
   AWS_ACCESS_KEY_ID:
@@ -19,9 +28,10 @@ env-alias:
 ```
 
 
-### Example - yaml
-Parse a value from `/foo/bar/data` in the file `/tmp/foobar.data` using an explict `yaml` parser because the filename
-extension does not indicate a `.yaml` file.
+### Example - YAML
+
+Parse a YAML file whose extension does not identify its format.
+
 ```yaml
 env-alias:
   EXAMPLE:
@@ -31,9 +41,10 @@ env-alias:
 ```
 
 
-### Example - json
-Parse a value from `/foo/bar/data` in the file `/tmp/foobar.json` using an inferred `JSON` parser because the filename
-infers the json file type. 
+### Example - inferred JSON
+
+The `.json` extension lets Env Alias infer the JSON parser.
+
 ```yaml
 env-alias:
   EXAMPLE:
@@ -42,12 +53,13 @@ env-alias:
 ```
 
 
-### Example - text
-Read the source as text even though the filename indicates `.json` content type.
+### Example - raw content
+
+Use `parser: none` to return all content unchanged, even when the filename implies JSON.
+
 ```yaml
 env-alias:
   EXAMPLE:
     source: "/tmp/foobar.json"
-    parser: text
-    selector: 1
+    parser: none
 ```

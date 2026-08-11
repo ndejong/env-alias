@@ -1,13 +1,21 @@
-from dataclasses import dataclass
+from pydantic import BaseModel, field_validator
+
+from .constants import ContentType, SourceMethod
 
 
-@dataclass
-class SourcedContent:
+class SourcedContent(BaseModel):
+    """Raw content fetched from a source, with metadata about how it was obtained."""
+
+    model_config = {"extra": "forbid"}
+
     source: str
-    source_method: str
+    source_method: SourceMethod
     content: str
-    content_type: str
+    content_type: ContentType
 
-    def __post_init__(self) -> None:
-        self.content_type = self.content_type.lower()
-        self.source_method = self.source_method.lower()
+    @field_validator("content_type", "source_method", mode="before")
+    @classmethod
+    def coerce_enum(cls, v: object) -> object:
+        if isinstance(v, str) and not isinstance(v, (SourceMethod, ContentType)):
+            return v.lower()
+        return v

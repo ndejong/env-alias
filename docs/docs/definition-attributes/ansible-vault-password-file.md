@@ -1,44 +1,41 @@
 # ansible_vault_password_file
 
-The `ansible_vault_password_file` definition-attribute is a special attribute that causes a standard Ansible Vault 
-password-file to be generated as per [docs.ansible.com](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#envvar-ANSIBLE_VAULT_PASSWORD_FILE) documentation.
+`ansible_vault_password_file` is a boolean that generates a special executable script for Ansible
+that emits the supplied `ansible_vault_password` value that makes Ansible Vault automation very
+easy to handle.
 
-When this is used to set Ansible variable `ANSIBLE_VAULT_PASSWORD_FILE` you gain the ability to easily invoke
-ansible-vault without further Ansible configuration or other Ansible environment settings.
+## What it does
 
-### Details
+Setting `ansible_vault_password_file: true` on a definition (alongside `ansible_vault_password`)
+exports two things:
 
-Of note is that the ansible-password-file rendering uses random file names and hash-of-source-name to create consistent 
-but difficult to guess environment names making it harder to target specific environment values. 
+* `ANSIBLE_VAULT_PASSWORD_FILE` (or the `name` you choose) — the path to the generated executable
+  script.
+* A generated environment variable holding the raw password, which that script prints so Ansible can
+  read it.
 
-```commandline
-$ env | grep ANSIBLE_VAULT_PASSWORD_FILE
-ANSIBLE_VAULT_PASSWORD_FILE=/tmp/igxrsfnrsxig
+The script path and generated variable name are derived deterministically from the password. Env Alias
+writes the script to the system temporary directory with owner-only permissions, reuses it for the
+same password, and does not remove it automatically.
 
-$ cat /tmp/igxrsfnrsxig
-#!/bin/sh
-echo "${E25AF8C1096A}"
+## Example
 
-$ env | grep E25AF8C1096A 
-E25AF8C1096A=zPrT1z8yYTBV5q5l7jahGoQf79fcu9qtD4ERM3wB
-```
-
-In the above example -
-
-* The env-var `ANSIBLE_VAULT_PASSWORD_FILE` points to a random filename `/tmp/igxrsfnrsxig` located in the system temp path
-* The Ansible password-file is a standard format executable that echos out another environment value as per Ansible [documentation](https://docs.ansible.com/ansible/latest/reference_appendices/config.html#envvar-ANSIBLE_VAULT_PASSWORD_FILE)
-* The environment name `E25AF8C1096A` gets generated based on a salted SHA256 of the source attribute name (not the value itself)
-* Finally, the value for the vault-password is exposed on the environment variable `E25AF8C1096A`  
-
-The above is achieved using an env-alias definition as simple as -
 ```yaml
+env-alias:
+  MYPROJECT_VAULT_PASSWORD:
+    name: null
+    source: "<getpass>"
+
   ANSIBLE_VAULT_PASSWORD_FILE:
-    ansible_vault_password: "some-secret-value"
+    ansible_vault_password: "env:MYPROJECT_VAULT_PASSWORD"
     ansible_vault_password_file: true
 ```
 
-!!!warning
+For the full example of chaining `ansible_vault_password` into both the password file and a Vault
+read, see [ansible_vault_password](ansible-vault-password.md).
 
-    Typically, the `ansible_vault_password` value should never be set using an in-the-clear value as shown above, you 
-    should use prior steps to obtain this value safely/securely such as from user-input using `<getpass>` or load 
-    from a Keepass file or other appropriate mechanism.
+!!! warning
+
+    Do not put a vault password directly in the definition file. Use `<getpass>`, KeePass, or another
+    appropriate source. Treat the resulting shell environment and temporary password-file path as
+    sensitive, and unset the generated variable when the Ansible session is finished.

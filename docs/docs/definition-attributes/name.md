@@ -1,11 +1,11 @@
 # name
 
-The `name` definition-attribute is used to name (or rename) the environment variable name that is otherwise 
-taken from the env-alias definition key name.
+The `name` definition-attribute changes the environment variable name that would otherwise come from the
+definition key.
 
-More importantly, the `name` attribute can be set to `null` in which case the variable will be treated as an 
-internal runtime only variable that does not get exposed into the environment; this is useful when passing 
-secrets in-between definitions.
+Set `name: null` to calculate a value without emitting an `export` for the calling shell. The value
+remains available to later definitions and child `exec` processes during the same generator run, which
+makes it useful for intermediate paths and secrets.
 
 
 ### Example - simple
@@ -24,8 +24,8 @@ env-alias:
 
 ### Example - hidden variable
 
-The example below demonstrates using a `null` name for `MYPROJECT_HIDDEN_ENV_VAR` that does not get assigned into
-the environment but can still be referenced in the subsequent `MYPROJECT_ENV_VAR` definition.
+The example below keeps `MYPROJECT_HIDDEN_ENV_VAR` out of the calling shell while making it available
+to the subsequent `MYPROJECT_ENV_VAR` definition.
 
 ```yaml
 env-alias:

@@ -1,9 +1,10 @@
+import logging
 from typing import Any
 
-from . import LOGGER_LEVEL, LOGGER_NAME
+from . import LOGGER_NAME
 from .lib.logger import logger_get
 
-logger = logger_get(name=LOGGER_NAME, loglevel=LOGGER_LEVEL)
+logger = logger_get(name=LOGGER_NAME, loglevel="info")
 
 
 class EnvAliasBaseException(Exception):
@@ -11,7 +12,7 @@ class EnvAliasBaseException(Exception):
         log_message = " ".join([str(x) for x in args]).strip()
         if log_message:
             logger.error(f"{log_message}")
-        if "detail" in kwargs and LOGGER_LEVEL == "debug":
+        if "detail" in kwargs and logger.isEnabledFor(logging.DEBUG):
             logger.error(f"{kwargs['detail']}".strip())
         super().__init__(*args)
 

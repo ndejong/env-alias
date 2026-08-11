@@ -2,102 +2,144 @@
 
 [![PyPi](https://img.shields.io/pypi/v/env-alias.svg)](https://pypi.python.org/pypi/env-alias/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/env-alias.svg)](https://github.com/threatpatrols/env-alias/)
-[![Build Status](https://github.com/threatpatrols/env-alias/actions/workflows/build-tests.yml/badge.svg)](https://github.com/threatpatrols/env-alias/actions/workflows/build-tests.yml)
+[![Build Status](https://github.com/threatpatrols/env-alias/actions/workflows/project-tests.yml/badge.svg)](https://github.com/threatpatrols/env-alias/actions/workflows/project-tests.yml)
 ![License](https://img.shields.io/github/license/threatpatrols/env-alias.svg)
 
-Env Alias is an environment variable swiss-army-knife that enables loading complex collections 
-of environment variables from a variety of sources only when you require them, thus reducing risks 
-in working with sensitive environment values.
+Env Alias is an environment variable swiss-army-knife that lets you load complex collections of environment
+variables from a variety of sources **only when you need them**, reducing the risk of working with sensitive values.
 
-A variety of data-formats are supported including **JSON**, **YAML**, **Keepass**, **Ansible Vault**, 
-**Plaintext** and **Ini**-config where these formats can be sourced from the local-filesystem, 
-http-remote or generated through shell-command exec output.
+It loads values from local files, http(s) URLs, shell `exec` output, Keepass databases, Ansible Vault files — in
+**JSON**, **YAML**, **Plaintext** and **INI** formats — and exports them into your shell as a one-shot sourced
+command. Values are fetched lazily, on demand, when you invoke the alias, so secrets are never loaded until you
+actually use them.
 
-For example setting an Ansible-vault password file and loading AWS access credentials from values stored 
-in a git project based Keepass file: 
+## Features
+
+* **Data sources:** local files, `http(s)` URLs, `<getpass>`, `<stdin>`, KeePass, Ansible Vault, and stdout from `exec`.
+* **Content formats:** JSON, YAML, INI, and plaintext.
+* **Selectors:** dot, slash, and bracket paths for JSON/YAML; `<section>.<option>` for INI; line numbers for plaintext.
+* **Ansible Vault Password File helper:** generates the executable password-file arrangement Ansible expects.
+* **`env:NAME` references:** reuse one whole value from the process environment or an earlier definition.
+* **Internal-only values:** `name: null` suppresses normal export to the calling shell while retaining the value for later definitions in the same run.
+* **`exec` support:** run prerequisite or startup commands as part of a definition.
+* **Terminal-only messages:** `value_to: <stderr>` writes to the terminal without polluting stdout.
+* **`--debug` output:** written to STDERR; treat it as sensitive because it can contain secret material.
+* **Multi-file invocation:** define many lazy aliases with one command.
+* Easy installation from PyPI.
+
+## Installation
+
+Requires Python 3.10 or later.
+
+```shell
+pipx install env-alias
+```
+
+(Plain `pip install env-alias` works too.)
+
+## How it works
+
+1. **Alias definition phase** — you add a line to `.bash_aliases` / `.bashrc`. At shell startup `env-alias` prints
+   one or more shell `alias` commands, which your shell sources. The aliases are lightweight placeholders — they do
+   **not** load any secrets yet.
+2. **Invocation phase** — when you actually run an alias (e.g. type `env-awesome`), it shells out to
+   `env-alias --generator <file>`, which resolves the values and prints `export "VAR"='value'` lines that your shell
+   sources. This is where the real (possibly slow, network/secret-fetching) work happens.
+
+Because a child process can never modify your current shell, the command must be **sourced**:
+
+```shell
+source <(env-alias ...)
+# equivalent:
+eval "$(env-alias ...)"
+```
+
+## How values are generated
+
+Env Alias definition files are YAML format files that define how the value for each environment variable is
+generated.
+
+* All Env Alias definition files MUST have an `env-alias` top-level root.
+* Environment variable names are defined by their key name, or their `name` attribute.
+* Each environment-variable definition uses attributes that define how their values are generated or obtained.
+
+Most definitions use exactly one of `source`, `exec`, or `value`. For ordinary file, HTTP(S), and
+`exec` content, generation follows three steps:
+
+1. **Acquire content** from a local file, HTTP(S) URL, or command stdout.
+2. **Parse content** as JSON, YAML, INI, or plaintext.
+3. **Select one value** with a JSON/YAML path, an INI `<section>.<option>`, or a plaintext line number.
+
+Direct `value`, `<stdin>`, and `<getpass>` definitions return raw values. KeePass uses its selector as
+an entry/attribute lookup, while Ansible Vault and password-file support are special cases.
+
+Definitions are evaluated top-to-bottom. An `env:NAME` reference first reads the process environment,
+then a value generated by an earlier definition, so put a value-producing definition before its consumer.
+
+## Quick start
+
+```shell
+# one alias, name inferred from the filename
+source <(env-alias ~/projects/awesome/env-awesome-vars.yml)
+
+# one alias, explicit name (only one file may follow an explicit name)
+source <(env-alias awesome-envvars ~/projects/awesome/env-awesome-vars.yml)
+
+# MANY projects in one line — one alias per file, each lazy-loaded
+source <(env-alias \
+  ~/.config/env-alias/env-proj-a.yml \
+  ~/.config/env-alias/env-proj-b.yml \
+  ~/.config/env-alias/env-proj-c.yml)
+```
+
+The multi-file form is recommended when you have many definitions: it collapses many `env-alias` process startups
+into one, while each emitted alias still lazily loads only its own file.
+
+## Example definition
+
 ```yaml
 env-alias:
 
   MYPROJECT_KEEPASS_FILE:
-    name: null  # prevents this value being assigned into env
-    exec: 'echo "$(git rev-parse --show-toplevel)/secrets/myproject-keepass.kdbx"'
-  
+    name: null                 # internal only — not exported
+    exec: 'root="$(git rev-parse --show-toplevel)" && printf "%s/secrets/myproject-keepass.kdbx" "$root"'
+
   MYPROJECT_KEEPASS_PASSPHRASE:
-    source: "<getpass>"  # obtain value from user-input using getpass method
-    override: false  # if this env-value exists then skip setting again
-    
+    source: "<getpass>"        # prompt the user (getpass) when run
+    override: false            # don't re-prompt if already set
+
   MYPROJECT_ANSIBLE_VAULT_PASSWORD:
-    name: null  # prevents this value being assigned into env
+    name: null
     source: "env:MYPROJECT_KEEPASS_FILE"
-    selector: "myproject-name/ansible-vault-entry-name:Password"  # select an item from Keepass file
+    selector: "myproject-name/ansible-vault-entry-name:Password"
     keepass_password: "env:MYPROJECT_KEEPASS_PASSPHRASE"
 
   ANSIBLE_VAULT_PASSWORD_FILE:
-    ansible_vault_password: "env:MYPROJECT_ANSIBLE_VAULT_PASSWORD"  # NB: see docs how this gets managed
-    ansible_vault_password_file: true  # invoke special helper that renders an Ansible Vault password file
+    ansible_vault_password: "env:MYPROJECT_ANSIBLE_VAULT_PASSWORD"
+    ansible_vault_password_file: true   # render an Ansible Vault password file
 
   AWS_SECRET_ACCESS_KEY:
     source: "env:MYPROJECT_KEEPASS_FILE"
     selector: "myproject-name/aws-entry-name:Password"
     keepass_password: "env:MYPROJECT_KEEPASS_PASSPHRASE"
-    
+
   AWS_ACCESS_KEY_ID:
     source: "env:MYPROJECT_KEEPASS_FILE"
     selector: "myproject-name/aws-entry-name:Username"
     keepass_password: "env:MYPROJECT_KEEPASS_PASSPHRASE"
-
 ```
 
-The above example sets the environment variable `MYPROJECT_KEEPASS_PASSPHRASE` with user input using 
-the `getpass` Python module only if not already set (`override=false`).  This environment value is then 
-used as the `keepass` passphrase to open a Keepass file where values are then selected and exported 
-into the shell environment.
+`MYPROJECT_KEEPASS_PASSPHRASE` is prompted for via `getpass` but only if not already set (`override: false`), then
+used to open the KeePass file so the AWS credentials and Ansible Vault password can be selected. The passphrase is
+exported so it can be reused in the current shell; run `unset MYPROJECT_KEEPASS_PASSPHRASE` when finished.
 
-Substantially more complex env-alias definitions can be created.
+By naming your aliases with an easy-to-remember prefix such as `env-`, they group together for shell
+**tab-completion**.
 
-By naming your env-aliases with an easy to remember prefix such as `env-` it is also possible to 
-leverage shell **tab-completion** thus making it easier to find the env-alias definitions created 
-for your project or other use-case situation.
+## What's next
 
-## Features
-Env Alias is enormously useful in working with large sets of environment variables from remote, encrypted 
-or otherwise secured data-sources.
- 
-* Data sources: **local-files**, **http-remote** and stdout from an **exec** command-line.
-* Source formats supported: **JSON**, **YAML**, **Keepass**, **Ansible Vault**, **Plaintext** and **Ini**-config.
-* Select values using **jq** style selectors, **xpath** style selectors or **line-numbers**.
-* 💥 Additional special handling for **Ansible Vault Password Files** that makes credential handling for **Ansible Vault** files substantially easier with reduced exposure risks. 💥     
-* Self reference environment values in the definition file or from the existing system environment.
-* Define variables with a `null` name to prevent them being exported into the system environment while still being available for self-reference within the env-alias definition; this is helpful when working with sensitive values that should not be available through the system environment.
-* Ability to use `exec` commands to setup other project prerequisites or other project start conditions.
-* Debug mode output to STDERR.
-* Easy installation from PyPI.
-* Plenty of documentation and examples - [https://threatpatrols.github.io/env-alias](https://threatpatrols.github.io/env-alias)
-
-## Installation
-Pip or pipx should be fine, we prefer pipx these days.
-```shell
-pipx install env-alias
-```
-
-## Usage
-This tool is typically invoked using an entry in `.bash_aliases` with an entry of the form:-
-```shell
-source <(env-alias ~/projects/awesome/env-awesome-vars.yml)
-```
-
-This simple `.bash_aliases` one-line entry creates the alias `env-awesome-project` by inferring the 
-alias-name from the filename, where this alias then invokes env-alias to set environment values 
-defined in `env-awesome-project.yml` 
-
-Alternatively, you might want to create the alias `awesome-envvars` which you could do as per - 
-```shell
-source <(env-alias awesome-envvars ~/projects/awesome/env-awesome-vars.yml)
-```
-
-## Project
-* Docs - [threatpatrols.github.io/env-alias](https://threatpatrols.github.io/env-alias)
-* PyPI - [pypi.python.org/pypi/env-alias](https://pypi.python.org/pypi/env-alias/)
-* Github - [github.com/threatpatrols/env-alias](https://github.com/threatpatrols/env-alias)
-
-This project was migrated from `github.com/ndejong/env-alias` to `github.com/threatpatrols/env-alias` in March 2025.
+* [Definition attributes](definition-attributes/source.md) — every attribute explained.
+* [Extended Examples](examples/terraform-aws-project.md) — real-world setups, each tagged with the definition attributes they use.
+* [Troubleshooting](troubleshooting.md) — common issues and fixes.
+* [Security](security.md) — threat model and best practices.
+* [Development](development.md) — building and testing with the Makefile/uv toolchain.

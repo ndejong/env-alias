@@ -1,12 +1,14 @@
 # value
 
-The `value` definition-attribute makes it possible to directly assign a value to an environment variable, it is 
-the most straight forward use case.
+The `value` definition-attribute assigns content directly. It bypasses `source`, `parser`, and
+`selector`, so use it for a literal value or a whole-value `env:` reference.
 
-Additionally, it is possible to reference other environment variables via the `env:` prefix as shown.  This can 
-be helpful when the value needs to be dynamic and used in subsequent definition steps.
+`value: "env:NAME"` looks up `NAME` in the process environment first, then in an earlier definition.
+The reference must occupy the entire value; it does not concatenate multiple variables. Definitions are
+evaluated in order, so place the value-producing definition before its consumer. See
+[source](source.md#env-references) for the complete `env:` rules.
 
-### Example - simple direct
+### Example - direct value
 
 ```yaml
 env-alias:
@@ -16,7 +18,7 @@ env-alias:
 ```
 
 
-### Example - by reference
+### Example - reference an earlier definition
 
 ```yaml
 env-alias:

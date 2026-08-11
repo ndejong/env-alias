@@ -1,114 +1,121 @@
 [build-system]
-build-backend = "pdm.backend"
-requires = ["pdm-backend"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-# project
-# ===
+
+[tool.hatch.version]
+path = "src/env_alias/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/env_alias"]
+
+
 [project]
 name = "env-alias"
-license = {text = "BSD-2-Clause" }
-authors = [{name="Nicholas de Jong", email="ndejong@threatpatrols.com"}]
+dynamic = ["version"]
 description = "Powerful helper utility to create shell alias commands to easily set collections of environment variables often with secret values from a variety of data-sources and data-formats."
-version = "0.5.3"
 readme = "README.md"
-requires-python = ">=3.8,<4"
+requires-python = ">=3.10"
+license = "BSD-2-Clause"
+authors = [{name = "Nicholas de Jong", email = "ndejong@threatpatrols.com"}]
 keywords = ["env-alias", "shell", "env", "alias", "bash"]
 classifiers = [
     "Topic :: Security",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13"
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
 ]
 dependencies = [
-    "pyyaml>=5.0"   # https://pypi.org/project/pyyaml/#history
+    "pyyaml>=5.0",
+    "pydantic>=2.0.0",
 ]
 
 [project.scripts]
 env-alias = "env_alias.main:entrypoint"
 
 [project.urls]
-Documentation = "https://threatpatrols.github.io/env-alias/"
 Homepage = "https://github.com/threatpatrols/env-alias"
 Repository = "https://github.com/threatpatrols/env-alias.git"
+Documentation = "https://threatpatrols.github.io/env-alias/"
 "Bug Tracker" = "https://github.com/threatpatrols/env-alias/issues"
 
-
-# slap-cli
-# ===
-[tool.slap]
-typed = true
-release.branch = "dev"
-
-[tool.slap.test]
-check = "slap check"
-mypy = "dmypy run src"
-pytest = "pytest tests/ -vv"
-ruff-format = "ruff format --check"
-ruff-lint = "ruff check"
-
-[tool.slap.run]
-format = "ruff format ."
-check-prereqs = """set -e; \
-    uv --help > /dev/null || (echo 'Failed uv prereq!' && exit 1); \
-    pdm --help > /dev/null || (echo 'Failed pdm prereq!' && exit 1); \
-    flit --help > /dev/null || (echo 'Failed flit prereq!' && exit 1); \
-    echo "Prereqs okay."
-"""
-docs-dev = """set -e; \
-    cd docs \
-    && touch uv.lock \
-    && uv run --active -- bash -xc 'mkdocs serve'
-"""
-docs-build = """set -e; \
-    cd docs \
-    && uv run --active -- bash -xc 'mkdocs build'
-"""
-package-build = """set -e; \
-    slap release --validate \
-    && slap test \
-    && slap publish --dry --build-directory ./dist
-"""
-
-
-# mypy
-# ===
-[tool.mypy]
-pretty = true
-warn_redundant_casts = true
-#warn_unused_ignores = true
-namespace_packages = true
-show_error_codes = true
-show_error_context = true
-warn_no_return = true
-warn_unreachable = true
-
-
-# uv
-# ===
-[tool.uv]
-dev-dependencies = [
-  "ruff",
-  "pytest",
-  "mypy",
-  "types-aiofiles",
-  "types-PyYAML",
+[project.optional-dependencies]
+dev = [
+    "basedpyright>=1.20.0",
+    "ruff>=0.8.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=5.0.0",
+    "hatch>=1.13.0",
+    "types-PyYAML",
+    "requests>=2.28.0",
 ]
 
 
-# ruff
-# ===
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=env_alias --cov-report=term-missing --cov-report=html -m 'not network and not slow' --cov-fail-under=80"
+markers = [
+    "network: tests that reach the live network (excluded by default)",
+    "slow: tests that build wheels or run large iterations (excluded by default)",
+    "requires_keepassxc: requires the keepassxc-cli binary on PATH",
+    "requires_ansible_vault: requires the ansible-vault binary on PATH",
+]
+
+
 [tool.ruff]
+target-version = "py310"
 line-length = 120
+indent-width = 4
 
 [tool.ruff.lint]
-ignore = ["E501"]  # E501 line too long (151 > 120 characters) - https://www.flake8rules.com/rules/E501.html
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "C4",
+    "UP",
+    "SIM",
+]
+ignore = [
+    "SIM108",
+]
+fixable = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**.py" = ["F401"]  # F401 module imported but unused
-"src/env_alias/main.py" = ["W293", "W291"]  # W293 blank line contains whitespace; W291 trailing whitespace
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ["env_alias"]
+
+
+[tool.basedpyright]
+pythonVersion = "3.10"
+typeCheckingMode = "standard"
+reportMissingImports = "none"
+reportMissingTypeStubs = "none"
+reportUnknownMemberType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownVariableType = "none"
+reportUnknownLambdaType = "none"
+reportUnknownParameterType = "none"
+reportGeneralTypeIssues = "warning"
+reportArgumentType = "warning"
+reportAttributeAccessIssue = "warning"
+reportOptionalMemberAccess = "warning"
+reportPossiblyUnboundVariable = "warning"
+include = ["src/env_alias", "tests"]
+exclude = ["**/node_modules", "**/__pycache__", "venv", ".venv"]

@@ -1,34 +1,37 @@
 # value_to
 
-The `value_to` definition-attribute makes it possible to send the generated `value` to either STDOUT or STDERR.
+The `value_to` definition-attribute writes the resolved value to **STDERR**. It is additive: a normal
+definition still emits its usual shell `export`. Combine it with `name: null` when the value should be a
+terminal-only status message.
 
-This can be helpful in circumstances when a quick debug reveal is required or you need to provide some kind of 
-user response.
+Do not use `value_to` to reveal secrets. STDERR can be captured by terminals, CI systems, and logs.
 
-
-### Example - to STDERR
+## Example — to STDERR
 
 ```yaml
 env-alias:
-  
+
   EXAMPLE_STDERR:
     name: null
     value: "This is a message that will get sent to STDERR"
-    value_to: "<STDERR>"
+    value_to: "<stderr>"
 ```
 
+The message is written to STDERR, which the shell never sources, so it is displayed in your terminal without
+interfering with stdout. Because the definition uses `name: null`, it does not export `EXAMPLE_STDERR`.
 
-### Example - to STDOUT
+## `value_to: <stdout>` was removed (0.7.0)
 
-```yaml
-env-alias:
-  
-  EXAMPLE_STDOUT_CONTENT:
-    name: null
-    exec: "date"
-  
-  EXAMPLE_STDOUT:
-    name: null
-    exec: 'echo "The date is ${EXAMPLE_STDOUT_CONTENT} - boom!"'
-    value_to: "<STDOUT>"
+**`value_to: <stdout>` is no longer supported.** It was removed because env-alias's stdout is *always* sourced by
+your shell (`source <(env-alias ...)`), so anything written there is executed as shell code. Writing a raw,
+unquoted value to stdout therefore produced broken output — and could execute arbitrary commands if the value
+contained shell syntax.
+
+If you still have `<stdout>` (or `<STDOUT>`) in a definition, env-alias now fails with a clear error like:
+
 ```
+Invalid definition for 'EXAMPLE': ... "'value_to: <stdout>' was removed because it wrote raw, unquoted text into
+the stream your shell sources. Use 'value_to: <stderr>' to send a message to the terminal instead."
+```
+
+Simply change `value_to: "<stdout>"` to `value_to: "<stderr>"` to send the same content to the terminal safely.

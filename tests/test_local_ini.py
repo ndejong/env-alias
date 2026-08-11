@@ -1,16 +1,10 @@
-import os
-import random
-import string
-import tempfile
 from pathlib import Path
 
 from env_alias.lib.generator import EnvAliasGenerator
 
 
-def test_sample_local_ini_01(capsys):
-    test_file = os.path.join(
-        tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)) + ".ini"
-    )
+def test_sample_local_ini_01(capsys, config_file, tmp_path):
+    test_file = tmp_path / "test1.ini"
     __write_ini_test_file(test_file)
 
     yaml = f"""
@@ -19,17 +13,15 @@ def test_sample_local_ini_01(capsys):
         selector: 'foo.bar'
     """
 
-    config_file = __generate_config_file(yaml)
-    EnvAliasGenerator(config_file=config_file).generate()
-    os.unlink(config_file)
-    os.unlink(test_file)
+    f = config_file(yaml)
+    EnvAliasGenerator(config_file=f).generate()
 
     captured = capsys.readouterr().out.rstrip()
-    assert captured == ' export "sample_local_ini_01"="value12345"'
+    assert captured == " export \"sample_local_ini_01\"='value12345'"
 
 
-def test_sample_local_ini_02(capsys):
-    test_file = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
+def test_sample_local_ini_02(capsys, config_file, tmp_path):
+    test_file = tmp_path / "test2.ini"
     __write_ini_test_file(test_file)
 
     yaml = f"""
@@ -39,17 +31,15 @@ def test_sample_local_ini_02(capsys):
         parser: 'ini'
     """
 
-    config_file = __generate_config_file(yaml)
-    EnvAliasGenerator(config_file=config_file).generate()
-    os.unlink(config_file)
-    os.unlink(test_file)
+    f = config_file(yaml)
+    EnvAliasGenerator(config_file=f).generate()
 
     captured = capsys.readouterr().out.rstrip()
-    assert captured == ' export "sample_local_ini_02"="value12345"'
+    assert captured == " export \"sample_local_ini_02\"='value12345'"
 
 
-def test_sample_local_ini_03(capsys):
-    test_file = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
+def test_sample_local_ini_03(capsys, config_file, tmp_path):
+    test_file = tmp_path / "test3.ini"
     __write_ini_test_file(test_file)
 
     yaml = f"""
@@ -59,19 +49,15 @@ def test_sample_local_ini_03(capsys):
         parser: 'ini'
     """
 
-    config_file = __generate_config_file(yaml)
-    EnvAliasGenerator(config_file=config_file).generate()
-    os.unlink(config_file)
-    os.unlink(test_file)
+    f = config_file(yaml)
+    EnvAliasGenerator(config_file=f).generate()
 
     captured = capsys.readouterr().out.rstrip()
-    assert captured == ' export "sample_local_ini_03"="some_value_67890"'
+    assert captured == " export \"sample_local_ini_03\"='some_value_67890'"
 
 
-def test_sample_local_ini_04(capsys):
-    test_file = (
-        os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8))) + ".ini"
-    )
+def test_sample_local_ini_04(capsys, config_file, tmp_path):
+    test_file = tmp_path / "test4.ini"
     __write_ini_test_file(test_file)
 
     yaml = f"""
@@ -85,22 +71,12 @@ def test_sample_local_ini_04(capsys):
         selector: 'cat.bar'
     """
 
-    config_file = __generate_config_file(yaml)
-    EnvAliasGenerator(config_file=config_file).generate()
-    os.unlink(config_file)
-    os.unlink(test_file)
+    f = config_file(yaml)
+    EnvAliasGenerator(config_file=f).generate()
 
     captured = capsys.readouterr().out.rstrip()
-    assert ' export "awesome01"="some_value_12345"' in captured
-    assert ' export "sample_local_ini_04b"="some_value_67890"' in captured
-
-
-def __generate_config_file(yaml_config) -> Path:
-    config = "env-alias:" + yaml_config
-    filename = os.path.join(tempfile.gettempdir(), "".join(random.choice(string.ascii_lowercase) for i in range(8)))
-    with open(filename, "w") as f:
-        f.write(config)
-    return Path(filename)
+    assert " export \"awesome01\"='some_value_12345'" in captured
+    assert " export \"sample_local_ini_04b\"='some_value_67890'" in captured
 
 
 def __write_ini_test_file(filename) -> Path:

@@ -1,85 +1,88 @@
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Union
 
-from ..exceptions import EnvAliasException
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-_UNSET_SENTINEL = "__unset_sentinel__"
+from .constants import ValueTo
+
 _EXCEPTION_END = "in an env-alias definition."
 
 
-@dataclass
-class EnvAliasDefinition:
+class EnvAliasDefinition(BaseModel):
+    """Defines how a single environment variable value is generated."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
     name: str
-    _filename: Path
+    value: str | None = None
+    source: str | None = None
+    exec_: str | None = Field(None, alias="exec")  # type: ignore[assignment]
+
+    parser: str | None = None
+    selector: str | None = None
+    value_to: str | None = None
 
     override: bool = True
-
-    value: Union[str, None] = None
-    source: Union[str, None] = None
-    exec: Union[str, None] = None
-
-    parser: Union[str, None] = None
-    selector: Union[str, None] = _UNSET_SENTINEL
-    value_to: Union[str, None] = None
-
-    keepass_password: Union[str, None] = None
-    ansible_vault_password: Union[str, None] = None
+    keepass_password: str | None = None
+    ansible_vault_password: str | None = None
     ansible_vault_password_file: bool = False
 
-    _is_internal_only: bool = False
+    filename: Path = Field(default=Path("."), exclude=True)
+    is_internal_only: bool = False
 
-    def __post_init__(self) -> None:
-        # sanity checks
-        if self.exec and self.source:
-            raise EnvAliasException(f"Cannot use 'exec' and 'source' {_EXCEPTION_END}")
-        if self.exec and self.value:
-            raise EnvAliasException(f"Cannot use 'exec' and 'value' {_EXCEPTION_END}")
-        if self.source and self.value:
-            raise EnvAliasException(f"Cannot use 'source' and 'value' {_EXCEPTION_END}")
-        if not self.source and not self.exec and not self.value and not self.ansible_vault_password_file:
-            raise EnvAliasException(f"Must have one 'source', 'exec' or 'value' {_EXCEPTION_END}")
+    @field_validator("selector", mode="before")
+    @classmethod
+    def coerce_selector(cls, v: object) -> object:
+        if v is not None and not isinstance(v, str):
+            return str(v)
+        return v
 
-        if isinstance(self.value_to, str):
-            self.value_to = self.value_to.lower()
-            if self.value_to not in ("<stderr>", "<stdout>"):
-                raise EnvAliasException(f"Invalid 'value_to' value, must be '<stderr>' or '<stdout>' {_EXCEPTION_END}")
+    @field_validator("override", "ansible_vault_password_file", mode="before")
+    @classmethod
+    def coerce_bool(cls, v: object) -> object:
+        if isinstance(v, str):
+            if v.lower() in ("true", "yes"):
+                return True
+            if v.lower() in ("false", "no"):
+                return False
+        return v
 
+    @field_validator("parser", "value_to")
+    @classmethod
+    def lowercase(cls, v: str | None) -> str | None:
+        return v.lower() if v else v
+
+    @field_validator("value_to")
+    @classmethod
+    def valid_value_to(cls, v: str | None) -> str | None:
+        # '<stdout>' was removed in env-alias 0.7.0: it wrote raw, unquoted text
+        # into the stdout stream that the user's shell sources, so it could never
+        # be a safe message — only broken output (and a command-execution risk).
+        if v == "<stdout>":
+            raise ValueError(
+                "'value_to: <stdout>' was removed because it wrote raw, unquoted text into "
+                "the stream your shell sources. Use 'value_to: <stderr>' to send a message "
+                "to the terminal instead."
+            )
+        if v and v != ValueTo.STDERR:
+            raise ValueError(f"Invalid 'value_to' value, must be '<stderr>' only {_EXCEPTION_END}")
+        return v
+
+    @model_validator(mode="after")
+    def check_cross_field_constraints(self) -> "EnvAliasDefinition":
+        if self.exec_ and self.source:
+            raise ValueError(f"Cannot use 'exec' and 'source' {_EXCEPTION_END}")
+        if self.exec_ and self.value is not None:
+            raise ValueError(f"Cannot use 'exec' and 'value' {_EXCEPTION_END}")
+        if self.source and self.value is not None:
+            raise ValueError(f"Cannot use 'source' and 'value' {_EXCEPTION_END}")
+        if not self.source and not self.exec_ and self.value is None and not self.ansible_vault_password_file:
+            raise ValueError(f"Must have one 'source', 'exec' or 'value' {_EXCEPTION_END}")
         if self.keepass_password and self.ansible_vault_password:
-            raise EnvAliasException(f"Cannot use both 'keepass_password' and 'ansible_vault_password' {_EXCEPTION_END}")
-        if self.ansible_vault_password_file and (self.exec or self.source or self.value or self.keepass_password):
-            raise EnvAliasException(
+            raise ValueError(f"Cannot use both 'keepass_password' and 'ansible_vault_password' {_EXCEPTION_END}")
+        if self.ansible_vault_password_file and (self.exec_ or self.source or self.value or self.keepass_password):
+            raise ValueError(
                 f"Can only use 'ansible_vault_password_file' with 'ansible_vault_password' {_EXCEPTION_END}"
             )
         if self.ansible_vault_password_file and not self.ansible_vault_password:
-            raise EnvAliasException(
-                f"Must use 'ansible_vault_password_file' with 'ansible_vault_password' {_EXCEPTION_END}"
-            )
-
-        # force parser to lower()
-        if self.parser:
-            self.parser = self.parser.lower()
-
-        # handle selector through the special _UNSET_SENTINEL
-        if self.selector and self.selector == _UNSET_SENTINEL:
-            self.selector = None
-        elif self.selector is None:  # because a "null" that gets cast to None by PyYAML was previously supported
-            self.selector = "none"
-
-        # correctly cast 'override' into a bool
-        if self.override not in (True, False):
-            if str(self.override).lower() in ("false", "no"):
-                self.override = False
-            elif str(self.override).lower() in ("true", "yes"):
-                self.override = True
-            else:
-                raise EnvAliasException("EnvAliasDefinition.override must be 'true', 'false' only.")
-
-        # correctly cast 'ansible_vault_password_file' into a bool
-        if self.ansible_vault_password_file not in (True, False):
-            if str(self.ansible_vault_password_file).lower() in ("false", "no"):
-                self.ansible_vault_password_file = False
-            elif str(self.ansible_vault_password_file).lower() in ("true", "yes"):
-                self.ansible_vault_password_file = True
-            else:
-                raise EnvAliasException("EnvAliasDefinition.ansible_vault_password_file must be 'true', 'false' only.")
+            raise ValueError(f"Must use 'ansible_vault_password_file' with 'ansible_vault_password' {_EXCEPTION_END}")
+        return self

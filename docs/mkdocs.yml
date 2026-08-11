@@ -5,7 +5,6 @@ nav:
   - Env Alias:
     - Home: index.md
     - Definition Attributes:
-      - definition-attributes/overview.md
       - definition-attributes/source.md
       - definition-attributes/parser.md
       - definition-attributes/selector.md
@@ -17,15 +16,27 @@ nav:
       - definition-attributes/keepass-password.md
       - definition-attributes/ansible-vault-password.md
       - definition-attributes/ansible-vault-password-file.md
-    - Examples:
-      - examples/terraform-aws-project.md
+    - Extended Examples:
       - examples/aws-credentials.md
+      - examples/terraform-aws-project.md
       - examples/ansible-project.md
-      - examples/debugging.md
+      - examples/keepass-secret-bundle.md
+      - examples/keepass-chained-secret.md
+      - examples/multi-provider-ini.md
+      - examples/value-reuse.md
+      - examples/remote-config.md
+      - examples/structured-files.md
+      - examples/per-session-secrets.md
+      - examples/project-readiness.md
+      - examples/terminal-messages.md
+      - examples/multi-file.md
     - Other:
-      - project.md
+      - security.md
+      - debugging.md
+      - troubleshooting.md
       - development.md
       - license.md
+      - project.md
   - Threat Patrols Docs: https://docs.threatpatrols.com/
 
 exclude_docs: |
@@ -105,8 +116,8 @@ plugins:
   - search
   - redirects:
       redirect_maps:
-        #opnsense/plugins/index.md: opnsense/index.md
-        #opnsense/multicloudsense/index.md: opnsense/index.md
+        definition-attributes/overview.md: index.md
+        examples/debugging.md: debugging.md
   - minify:
       minify_js: true
       minify_css: true

@@ -1,42 +1,41 @@
-# Terraform AWS project
+# Terraform on AWS
+
+Configure Terraform's plugin cache and the AWS provider's standard environment variables from local
+AWS configuration files, without placing credentials in the definition file.
 
 ## Example
 
-The example below shows an Env Alias definition for setting up a Terraform environment.  Notice that 
-all parts of the environment are easily established by calling a single alias name and that no secret
-values are contained within.
-
- * Environment variable `TF_VAR_aws_access_key_id` is set by reading the file `~/.aws/credentials` 
-   and selecting the value from `account_name.aws_access_key_id` 
- * Environment variable `TF_VAR_aws_secret_access_key` is set in a similar manner.
- * The path `~/.terraform.d/plugin-cache` is created and the shell exec stdout is discarded.
- * Environment variable `TF_PLUGIN_CACHE_DIR` is set directly in-line to the value `~/.terraform.d/plugin-cache`
+[exec](../definition-attributes/exec.md){: .feat .f-exec}
+[source](../definition-attributes/source.md){: .feat .f-src}
+[parser](../definition-attributes/parser.md){: .feat .f-parser}
+[selector](../definition-attributes/selector.md){: .feat .f-selector}
 
 ```yaml
 env-alias:
+  TF_PLUGIN_CACHE_DIR:
+    exec: 'mkdir -p "$HOME/.terraform.d/plugin-cache" && printf "%s/.terraform.d/plugin-cache" "$HOME"'
 
-    TF_PLUGIN_CACHE_DIR_CREATE:
-        name: null
-        exec: 'mkdir -p ~/.terraform.d/plugin-cache'
+  AWS_ACCESS_KEY_ID:
+    source: '~/.aws/credentials'
+    parser: 'ini'
+    selector: 'account_name.aws_access_key_id'
 
-    TF_PLUGIN_CACHE_DIR:
-        value: '~/.terraform.d/plugin-cache'
+  AWS_SECRET_ACCESS_KEY:
+    source: '~/.aws/credentials'
+    parser: 'ini'
+    selector: 'account_name.aws_secret_access_key'
 
-    TF_VAR_aws_access_key_id:
-        source: '~/.aws/credentials'
-        parser: 'ini'
-        selector: 'account_name.aws_access_key_id'
-
-    TF_VAR_aws_secret_access_key:
-        source: '~/.aws/credentials'
-        parser: 'ini'
-        selector: 'account_name.aws_secret_access_key'
-
-    TF_VAR_aws_default_region:
-        source: '~/.aws/config'
-        parser: 'ini'
-        selector: 'profile account_name.region'
-
-    TF_VAR_aws_ssh_key_name:
-        value: 'username'
+  AWS_DEFAULT_REGION:
+    source: '~/.aws/config'
+    parser: 'ini'
+    selector: 'profile account_name.region'
 ```
+
+Walkthrough:
+
+1. `TF_PLUGIN_CACHE_DIR` creates the directory and prints its fully expanded path. `exec` uses that
+   stdout value for the export, avoiding a literal unexpanded `~` path.
+2. `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_DEFAULT_REGION` are the standard names read
+   by the AWS provider. Each is selected from the relevant AWS INI file.
+3. Replace `account_name` with an existing profile. This example configures provider credentials; a
+   Terraform input variable would require a matching `variable` declaration in your Terraform code.

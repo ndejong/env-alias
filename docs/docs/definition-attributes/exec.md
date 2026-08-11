@@ -1,70 +1,40 @@
 # exec
 
-The `exec` definition-attribute can be used to obtain values from STDOUT when executing a shell command.   All the 
-usual parsers and selectors are available as they are with other source types.
+The `exec` definition-attribute runs a shell command and uses its STDOUT as the definition content.
+Specify `parser` and `selector` when that output is structured. A nonzero exit status aborts generation
+and reports the command's captured error output on STDERR.
 
-!!! warning
-    
-    It should be obvious, however, shell execution hazards and their appropriate precautions apply with this functionality.
+!!! warning "Shell execution — understand the risk"
 
+    The `exec` attribute runs an arbitrary shell command via `subprocess` with `shell=True`. This is
+    by design, but a definition file is therefore as powerful as a shell script.
 
+    **Threat model:**
 
-### Example - curl
+    * **Untrusted YAML files:** Never run a definition file you did not author or audit. A malicious
+      `exec` value can execute arbitrary code on your machine.
+    * **Shared environments:** If multiple users share a definition file (e.g. in a team repo), any
+      contributor can inject commands via `exec`. Review changes to definition files in code review.
+    * **Downloaded definitions:** env-alias does not fetch definition files itself, but downloading an
+      untrusted YAML file and then running env-alias against it has the same risk.
 
-For example using `exec` it is possible to set external values by calling curl
+    **Mitigations:**
 
-```yaml
-env-alias:
-    EXAMPLE:
-        exec: "curl -s https://ip-ranges.amazonaws.com/ip-ranges.json"
-        parser: "json"
-        selector: ".prefixes[1].ip_prefix"
-```
+    * Treat env-alias definition files with the same caution as shell scripts.
+    * Use the `source` attribute for HTTP(S) or local-file data when you do not need a shell command.
+    * Set restrictive file permissions on definition files that contain sensitive `exec` commands.
 
-This example is somewhat redundant because env-alias will perform a http-get request for any source definition
-that looks like a URL anyway.
-
-
-### Example - mkdir
-
-This functionality can be useful in other ways too, such as making sure resources exist before loading an 
-environment, for example create a path and skip setting the env variable.
+## Example
 
 ```yaml
 env-alias:
-    EXAMPLE:
-        name: null
-        exec: "mkdir -p ~/.terraform.d/plugin-cache"
+  PROJECT_ROOT:
+    exec: 'git rev-parse --show-toplevel'
+
+  BOOTSTRAP_CACHE:
+    name: null
+    exec: 'mkdir -p "$HOME/.cache/myproject"'
 ```
 
-
-### Example - random string
-
-Another example that invokes a shell-command to generate a 20 character random value, by default the 
-source-type is `text` and the selector will take the first line so no further definition is required here. 
-
-```yaml
-env-alias:
-    EXAMPLE:
-        exec: "head /dev/urandom | base64 - -w0 | tr -d "=/+" | head -c20"
-```
-
-
-If we expand this into long-form with its parser and selector, we'd get the same thing.
-```yaml
-env-alias:
-    EXAMPLE:
-        exec: "head /dev/urandom | base64 - -w0 | tr -d "=/+" | head -c20"
-        parser: "text"
-        selector: 1
-```
-
-### Example - host ip addr
-
-Another example to obtain the first ip-address on the first interface of the host  
-
-```yaml
-env-alias:
-    EXAMPLE:
-        exec: "ip -json addr | jq -r .[1].addr_info[0].local"
-```
+`PROJECT_ROOT` exports the command's single-line output. `BOOTSTRAP_CACHE` runs only for its side
+effect; `name: null` discards the command's output instead of exporting a variable.

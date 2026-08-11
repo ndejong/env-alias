@@ -2,7 +2,6 @@
 name = "env-alias-docs"
 version = "0.1.0"
 description = "Env-alias docs"
-readme = "README.md"
 requires-python = ">=3.12, <4"
 
 dependencies = [

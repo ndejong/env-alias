@@ -5,6 +5,8 @@ already exists.
 
 This is helpful when you only want to obtain user input once per terminal session.
 
+By default `override` is `True`, meaning Env Alias will override any existing environment value.
+
 ### Example - override
 
 ```yaml
