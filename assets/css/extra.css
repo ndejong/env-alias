@@ -1,4 +1,44 @@
 
+/* --------------------------------------------------------------------- *
+ * Definition-attribute badges used by Extended Examples. Each badge     *
+ * names a documented definition attribute and links to its page.        *
+ * Usage: [source](../definition-attributes/source.md){: .feat .f-src}  *
+ * --------------------------------------------------------------------- */
+
+.feat {
+  display: inline-block;
+  padding: 0.15em 0.7em;
+  margin: 0.15em 0.2em 0.15em 0;
+  border-radius: 2em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff !important;
+  background-color: var(--md-primary-fg-color);
+  transition: filter 0.15s ease;
+}
+.feat:hover {
+  filter: brightness(1.15);
+  color: #fff !important;
+}
+
+.feat-row {
+  margin: 0.25em 0 1em;
+  line-height: 1.9;
+}
+
+/* definition attributes */
+.f-src          { background-color: #2f7bd9; }   /* source             */
+.f-exec         { background-color: #2e9e5b; }   /* exec               */
+.f-parser       { background-color: #e0762a; }   /* parser             */
+.f-selector     { background-color: #9a58b5; }   /* selector           */
+.f-value        { background-color: #4e7ca7; }   /* value              */
+.f-name         { background-color: #c0524e; }   /* name / null        */
+.f-override     { background-color: #c9a030; }   /* override           */
+.f-valueto      { background-color: #7c8794; }   /* value_to <stderr>  */
+.f-keepass      { background-color: #5b4fa6; }   /* keepass_password   */
+.f-ansible      { background-color: #8e44ad; }   /* ansible_vault_*    */
+
 @keyframes heart-pulse {
   0%, 40%, 80%, 100% { transform: scale(1); }
   20%, 60% { transform: scale(1.15); }
