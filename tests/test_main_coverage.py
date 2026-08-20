@@ -200,8 +200,10 @@ def test_entrypoint_systemexit_nonzero(capsys):
 
 
 def test_entrypoint_rhs_special_chars(tmp_path, config_file, capsys):
-    """Filenames with single quotes should be escaped in the alias."""
-    f = tmp_path / "test'file.yml"
+    """Filepaths with single quotes in directory name should be escaped in the alias."""
+    d = tmp_path / "test'dir"
+    d.mkdir()
+    f = d / "test-file.yml"
     f.write_text("env-alias:\n    VAR:\n        value: val\n")
     code = _run("myalias", str(f))
     assert code is None
@@ -209,3 +211,92 @@ def test_entrypoint_rhs_special_chars(tmp_path, config_file, capsys):
     assert "alias" in out.lower()
     # single quote should be escaped
     assert "'\\''" in out or "test" in out
+
+
+# --- entrypoint() — glob expansion and validation -------------------------
+
+
+def test_entrypoint_glob_zero_matches_emits_warning(tmp_path, capsys, caplog):
+    """Glob with zero matches logs a WARNING to stderr and exits 0 with no stdout."""
+    code = _run(str(tmp_path / "nonexistent-*.yml"))
+    assert code is None
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "No definition files matched glob pattern" in caplog.text
+
+
+def test_entrypoint_glob_matches_emits_aliases(tmp_path, capsys):
+    """Glob with matches expands and emits an alias per matched file."""
+    f1 = tmp_path / "env-app1.yml"
+    f1.write_text("env-alias:\n    A:\n        value: 1\n")
+    f2 = tmp_path / "env-app2.yml"
+    f2.write_text("env-alias:\n    B:\n        value: 2\n")
+
+    code = _run(str(tmp_path / "env-*.yml"))
+    assert code is None
+    captured = capsys.readouterr()
+    assert 'alias "env-app1"=' in captured.out
+    assert 'alias "env-app2"=' in captured.out
+
+
+def test_entrypoint_naked_directory_raises(tmp_path):
+    """Passing a naked directory raises EnvAliasException."""
+    d = tmp_path / "configs"
+    d.mkdir()
+    code = _run(str(d))
+    assert code == 1
+
+
+def test_entrypoint_non_yaml_extension_raises(tmp_path):
+    """Passing a non-YAML file raises EnvAliasException."""
+    f = tmp_path / "config.json"
+    f.write_text("{}")
+    code = _run(str(f))
+    assert code == 1
+
+
+def test_entrypoint_empty_basename_raises():
+    """Root slash only path raises EnvAliasException."""
+    code = _run("/")
+    assert code == 1
+
+
+def test_entrypoint_explicit_alias_with_zero_match_glob(tmp_path, capsys):
+    """Explicit alias with a glob that matches 0 files exits 0 cleanly."""
+    code = _run("myalias", str(tmp_path / "nonexistent-*.yml"))
+    assert code is None
+    captured = capsys.readouterr()
+    assert captured.out == ""
+
+
+def test_entrypoint_explicit_alias_with_multi_match_glob(tmp_path):
+    """Explicit alias with a glob matching multiple files raises EnvAliasException."""
+    f1 = tmp_path / "env-1.yml"
+    f1.write_text("env-alias:\n    A:\n        value: 1\n")
+    f2 = tmp_path / "env-2.yml"
+    f2.write_text("env-alias:\n    B:\n        value: 2\n")
+
+    code = _run("myalias", str(tmp_path / "env-*.yml"))
+    assert code == 1
+
+
+def test_entrypoint_glob_invalid_extension_raises(tmp_path):
+    """Glob pattern with non-YAML extension raises EnvAliasException."""
+    code = _run(str(tmp_path / "env-*.txt"))
+    assert code == 1
+
+
+def test_entrypoint_glob_matched_invalid_filename_raises(tmp_path):
+    """Glob matching a file with invalid characters in filename raises EnvAliasException."""
+    f = tmp_path / "env-bad$name.yml"
+    f.write_text("env-alias:\n    A:\n        value: 1\n")
+    code = _run(str(tmp_path / "env-*.yml"))
+    assert code == 1
+
+
+def test_entrypoint_multi_file_all_zero_match_globs(tmp_path, capsys):
+    """Multi-file mode where all globs match 0 files exits 0 cleanly."""
+    code = _run(str(tmp_path / "none1-*.yml"), str(tmp_path / "none2-*.yml"))
+    assert code is None
+    captured = capsys.readouterr()
+    assert captured.out == ""

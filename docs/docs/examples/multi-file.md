@@ -25,12 +25,18 @@ Walkthrough:
 1. Create the other project definition files in the same way, then register all of them at shell
    startup with one command:
 
-   ```shell
-   source <(env-alias \
-     ~/.config/env-alias/env-project-a.yml \
-     ~/.config/env-alias/env-project-b.yml \
-     ~/.config/env-alias/env-project-c.yml)
-   ```
+    ```shell
+    source <(env-alias \
+      ~/.config/env-alias/env-project-a.yml \
+      ~/.config/env-alias/env-project-b.yml \
+      ~/.config/env-alias/env-project-c.yml)
+    ```
+
+    Or using a file pattern (glob):
+
+    ```shell
+    source <(env-alias ~/.config/env-alias/env-*.yml)
+    ```
 
 2. One invocation emits **one lazy alias per file**, named from each basename —
    `env-project-a`, `env-project-b`, `env-project-c`.

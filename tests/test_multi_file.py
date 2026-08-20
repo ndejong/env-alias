@@ -230,6 +230,18 @@ class TestEntrypointMultiFile:
 
 
 class TestCliMultiFile:
+    def test_multi_file_nonexistent_files_emits_aliases(self, tmp_path, capsys):
+        """Non-existent definition files still emit aliases without disk access."""
+        f1 = tmp_path / "env-host1.yml"
+        f2 = tmp_path / "env-host2.yml"
+        # Neither file exists on disk
+        code = _run(str(f1), str(f2))
+        assert code is None
+        aliases = _find_alias_lines(capsys.readouterr().out)
+        assert len(aliases) == 2
+        assert any('alias "env-host1"=' in a for a in aliases)
+        assert any('alias "env-host2"=' in a for a in aliases)
+
     def test_multi_file_subprocess(self, tmp_path, config_file):
         import shutil
         import subprocess

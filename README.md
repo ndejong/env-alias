@@ -87,6 +87,12 @@ source <(env-alias \
   ~/.config/env-alias/env-proj-c.yml)
 ```
 
+You can also pass a file pattern (glob):
+
+```shell
+source <(env-alias ~/.config/env-alias/env-*.yml)
+```
+
 One process at shell startup defines `env-proj-a`, `env-proj-b` and `env-proj-c` as independent lazily-loaded
 aliases. This is the recommended pattern when you have many definitions.
 
